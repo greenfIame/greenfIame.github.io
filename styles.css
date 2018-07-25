@@ -1,8 +1,8 @@
 body {
-	padding: 0; 
+	padding: 0;
 	margin: 0;
 	font-family: Futura, sans-serif;
-} 
+}
 
 #staticBackgroundContainer {
 	position: fixed;
@@ -105,4 +105,8 @@ ul {
 #contacts {
 	background-color: #fff;
 	text-align: center;
+}
+
+a {
+	color: inherit;
 }
