@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Interactive Periodic Table</title>
+
+    <script src="sketch.js" type="text/javascript"></script>
+
+		<link rel="stylesheet" href="styles.css">
+  </head>
+  <body onload="start()" onkeydown="keyPress(event)">
+		
+		<div id="Title">
+			An Interactive Periodic Table
+		</div>
+
+		<div id="sidebarHandle" onclick="moveSideBar()">
+			<div class="sidebarHandleGrip" style="top: 30px;"></div>
+			<div class="sidebarHandleGrip" style="top: 34px;"></div>
+			<div class="sidebarHandleGrip" style="top: 38px;"></div>
+			<div class="sidebarHandleGrip" style="top: 42px;"></div>
+			<div class="sidebarHandleGrip" style="top: 46px;"></div>
+		</div>
+
+		<div id="sidebar" onclick="hideElementData()">
+			
+			<div id="rescrape" class="sidebarButton" onclick="">
+				<p>Re-scrape data</p>
+			</div>
+			
+			<div id="reversed" class="sidebarButton" onclick="if (!this.className.match('inactive')) {checkReverse(this)}">
+				<p>Reverse order</p><input type="checkbox" id="reverseCheckbox"></input>
+			</div>
+
+			<div id="layoutSelect" class="dropdown" onmouseenter="showContent(this)" onmouseleave="hideContent(this)">
+				<div id="layoutSelectButton" class="dropdownButton">
+					Layout:
+				</div>
+				<div id="layoutSelectContent" class="content">
+					<div class='selectOption active' id='layout_periodic' onclick='layoutChange(this)'>Periodic Table</div>
+				</div>
+			</div>
+
+			<div id="highlightSelect" class="dropdown" onmouseenter="showContent(this)" onmouseleave="hideContent(this)">
+				<div id="highlightSelectButton" class="dropdownButton">
+					Highlight:
+				</div>
+				<div id="highlightSelectContent" class="content">
+					<div class='selectOption active' id='highlight_none' onclick='highlight(this)'>None</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div id="elements">
+			<div id="dataForm">
+				<div id="diamondArrow">
+					<div class="diamondTop"></div>
+					<div class="diamondBot"></div>
+				</div>
+				<div id="elementData">
+					<div id="dataText"></div>
+				</div>
+			</div>
+		</div>
+
+		<div id="Search"></div>
+
+		<div id="help">
+			<div style="font-size: 40px; position: absolute; top: -34px; left: -10px;">click</div>
+			⤷
+		</div>
+
+  </body>
+</html>
