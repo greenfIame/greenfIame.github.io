@@ -4,7 +4,7 @@ body {
 	padding: 0;
 	margin: 0;
 	font-family: arial, sans-serif;
-	background-color: rgb(240, 240, 240); 
+	background-color: rgb(240, 240, 240);
 }
 
 #help {
@@ -278,4 +278,42 @@ p {
 	-ms-user-select: none; /* IE10+/Edge */
 	user-select: none; /* Standard */
 	margin: 4px;
+}
+
+#loading {
+	position: absolute;
+	fill:#666;
+	left: 32.5%;
+	top: calc(100% / 24);
+	animation-name: example;
+  animation-duration: 4s;
+	animation-iteration-count: infinite;
+}
+
+@keyframes loading {
+    0%   		{transform: rotate(0deg);}
+
+		12.49% 	{transform: rotate(0deg);}
+		12.5% 	{transform: rotate(45deg);}
+
+		24.99% 	{transform: rotate(45deg);}
+		25% 		{transform: rotate(90deg);}
+
+		37.49% 	{transform: rotate(90deg);}
+		37.5% 	{transform: rotate(135deg);}
+
+		49.99% 	{transform: rotate(135deg);}
+		50% 		{transform: rotate(180deg);}
+
+		62.49% 	{transform: rotate(180deg);}
+		62.5% 	{transform: rotate(225deg);}
+
+		74.99% 	{transform: rotate(225deg);}
+		75% 		{transform: rotate(270deg);}
+
+		87.49% 	{transform: rotate(270deg);}
+		87.5% 	{transform: rotate(315deg);}
+
+		99.99% 	{transform: rotate(315deg);}
+		100% 		{transform: rotate(360deg);}
 }

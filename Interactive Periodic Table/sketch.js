@@ -40,14 +40,14 @@ function start() {
 		for (var i = 0; i < elements.length; i++) {
 			createDOMelement(elements[i])
 		}
-	
+
 		elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
 		createButtons()
 		createPlaceholders()
 		layout()
 		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 2000)
 	}
-	
+
 	//https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0
 	// var xhttp = new XMLHttpRequest()
 // 	xhttp.onreadystatechange = function() {
@@ -78,14 +78,14 @@ function scrapeElements() {
 function request(url, func, load) {
 	var xhttp = new XMLHttpRequest()
 	xhttp.URL = url
-	
+
 	if (load) {
 		xhttp.onreadystatechange = function() {
 			console.log(["request not initialized", "server connection established", "request received", "processing request", "request finished and response is ready"][this.readyState])
 
 	  }
 	}
-		
+
   xhttp.onload = function() {
     func(this)
   }
@@ -112,9 +112,9 @@ function addElement(that){
 		symbol: /[A-Za-z]{1,2}$/.exec(XPath("//caption", doc).innerText)[0],
 		phase: /([A-Za-z])+\w/.exec(XPath("//tr[contains(., 'Phase')]/td", doc).innerText||"solid")[0],
 		crystal_structure: XPath("//tr[contains(., 'Crystal structure')]/td/a", doc).innerText,
-		
+
 		shells: XPath("//tr[contains(., 'Electrons per shell')]/td", doc).innerText.split(",").map(function(a){return parseInt(a)}),
-		
+
 		vaporisation:						parseFloat(/([0-9]|[\.])+(?=\s)/.exec(XPath("//tr[contains(., 'Heat of vapor')]/td", doc).innerText))||null,
 		electronegativity:			parseFloat(/([0-9]|[\.])+/.exec(XPath("//tr[contains(., 'Electronegativity')]/td", doc).innerText))||null,
 		covalent_radius:				parseFloat(/([0-9]|[\.])+/.exec(XPath("//tr[contains(., 'Covalent radius')]/td", doc).innerText))||null,
@@ -124,18 +124,18 @@ function addElement(that){
 		group:									parseFloat(/([0-9]|[\.])+/.exec(XPath("//tr[contains(., 'Group')]/td", doc).innerText))||null,
 		period:									parseFloat(/([0-9]|[\.])+/.exec(XPath("//tr[contains(., 'Period')]/td", doc).innerText))||null,
 		electrical_resisivity:	parseFloat(/([0-9]|[\.])+/.exec(XPath("//tr[contains(., 'Electrical resistivity')]/td", doc).innerText))||null,
-		
+
 		first_ionization:		parseFloat(/[0-9\.]+/.exec(/\s([0-9]|[\.])+\s/.exec(XPath("//tr[contains(., 'ation energies')]//li", doc).innerText))),
 		atomic_number:			parseFloat(XPath("//tr[contains(., 'Atomic number (Z)')]/td", doc).innerText),
-		
+
 		atomic_weight:	parseFloat(/([0-9\.]+)(?![0-9]*♠)/.exec(XPath("//tr[contains(., 'atomic weight')]//span[@class='nowrap']|//tr[contains(., 'Mass number')]/td", doc).innerHTML)),
-		
+
 		discovery: XPath("//tr[contains(., 'Discovery')]", doc).innerText,
 	}
-	
+
 	//Making discovery year linear
 	element.discovery = /[0-9]{2,4}/.exec(element.discovery.reverse())[0].reverse() * (element.discovery.match(/([^a-z]|^)(bce*)((?=[^a-z])|$)/gi) ? -1 : 1)
-	
+
 	//Assigning general categories
 	if (element.category) {
 		element.category = element.category.replace(/[0123456789\[\]]/g, "")
@@ -168,13 +168,13 @@ function addElement(that){
 	if (element.category == 8 || element.category == 9) {
 		element.group = null
 	}
-	
+
 	console.log(element.name)
-	
+
 	elements.push(element)
 	createDOMelement(element)
 	elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
-	
+
 	if (elements.length == elementsLength) {
 		window.localStorage.IPT = JSON.stringify(elements)
 		createButtons()
@@ -194,7 +194,7 @@ function createDOMelement(element) {
 	DOMelement.style.left = "47.5%"
 	DOMelement.style.top = "40%"
 	elementsDiv.appendChild(DOMelement)
-	
+
 	if (layoutType == "periodic") {
 		var x = element.group
 		var y = element.period
@@ -217,7 +217,7 @@ function createDOMelement(element) {
 function createButtons() {
 	var element = elements[0]
 	for (var i in element) {
-		
+
 		//You cannot sort or highlight by appearance, shells
 		if (i == "appearance" || i == "shells" || i == "Element") {
 			continue
@@ -462,7 +462,7 @@ function moveSideBar() {
 		document.getElementById("help").style["-webkit-transition"] = "opacity 3s, right 1s"
 		document.getElementById("help").style.opacity = 0
 	}
-	
+
 	hideElementData()
 	sideBar = !sideBar
 	elementsDiv.style.transition = '1s'
@@ -499,8 +499,8 @@ function resize() {
 		document.getElementById("diamondArrow").style.fontSize = `calc((100vw - ${rhs}px) * 0.005)`
 		document.getElementById("dataText").style.fontSize = `calc((100vw - ${rhs}px)/90)`
 	}
-	
-	document.getElementById("help").style.right = `calc(${rhs}px + 24px)` 
+
+	document.getElementById("help").style.right = `calc(${rhs}px + 24px)`
 	document.getElementById("Title").style.width = `calc(100vw - ${rhs}px)`
 	document.getElementById("sidebar").style.width = `${rhs}px`
 	document.getElementById("sidebarHandle").style.right = `${rhs}px`
@@ -589,12 +589,12 @@ function hideElementData() {
 function binarySearch(list, attribute, target) {
 	var min = 0, max = list.length - 1
 	var index = Math.floor((max - min)/2)
-	
+
 	if (!target) {
 		target = attribute
 		attribute = function(a) {return a}
 	}
-	
+
 	do {
 		if (attribute(list[index]) < target) {
       min = index + 1
@@ -605,18 +605,18 @@ function binarySearch(list, attribute, target) {
 		index = min + Math.floor((max - min)/2)
 
 	} while (max != min && attribute(list[index]) != target)
-	
+
 	return attribute(list[index]) == target ? index : null
 }
 
 //Shows relevant element data
 function showElementData(that) {
 	var index = binarySearch(elementsByAtomicNumber, function(a){return a.atomic_number}, that.querySelector(".AtomicNumber").innerHTML)
-	
+
 	var element = elementsByAtomicNumber[index]
 
 	var Year = `${Math.abs(element.discovery)} ${element.discovery > 0 ? "CE" : "BCE"}`
-	
+
 	document.getElementById("dataText").innerHTML = `
 	Symbol: ${element.symbol}<br>
 	Name: ${element.name}<br>
@@ -651,7 +651,7 @@ function showElementData(that) {
 		document.getElementById("elementData").style.top = `${elementsDiv.clientHeight*0.95 - (document.getElementById("dataText").scrollHeight + 2)}px`
 	}
 	document.getElementById("elementData").style.height = document.getElementById("dataText").scrollHeight + "px"
-	
+
 	document.getElementById("diamondArrow").style.top = parseFloat(eTop) + 0.4 + "%"
 
 	if (parseFloat(eLeft) + 7.3 + w > 100 || (
