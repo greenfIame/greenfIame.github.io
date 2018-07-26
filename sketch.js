@@ -20,11 +20,11 @@ function scroll_() {
 	var s = document.documentElement.scrollTop || document.body.scrollTop
 	if (s > window.innerHeight * 2/3) {
 		if (!scrollShowing) {
-			toTop.style.opacity = 0.5
+			toTop.className = ""
 			scrollShowing = true
 		}
 	} else if (scrollShowing) {
-		toTop.style.opacity = ""
+		toTop.className = "inactive"
 		scrollShowing = false
 	}
 }

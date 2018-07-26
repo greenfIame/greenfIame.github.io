@@ -51,7 +51,7 @@ h3 {
 	bottom: 5px;
 	padding: 10px 10px 0 10px;
 	background-color: #ddd;
-	opacity: 0;
+	opacity: 0.5;
 	cursor: pointer;
 	transition: 0.5s;
 }
@@ -69,6 +69,10 @@ h3 {
 
 #toTop:hover {
 	opacity: 1;
+}
+
+.inactive {
+	opacity: 0 !important;
 }
 
 .section {
