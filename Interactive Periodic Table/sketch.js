@@ -65,6 +65,13 @@ function start() {
 
 function scrapeElements() {
 	loading.style.display = "block"
+	elements = []
+	var domElements = document.querySelectorAll(".element")
+	for (var i = 0; i < domElements.length; i++) {
+		domElements[i].remove()
+	}
+	document.getElementById("elements")
+
 	request("https://en.wikipedia.org/wiki/Periodic_table", function(that){
 		var site = eval(that.responseText.slice(26))
 		var links = site.contents.match(/<span class="nounderlines"><a href="\/wiki\/([^"])*(?=")/g)
