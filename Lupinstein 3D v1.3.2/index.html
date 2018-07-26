@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Lupinstein 3D</title>
+
+	<link rel="stylesheet" href="style.css">
+
+    <script src="libraries/p5.js" type="text/javascript"></script>
+	<script src="libraries/p5.dom.js" type="text/javascript"></script>
+	<script src="libraries/p5.sound.js" type="text/javascript"></script>
+	<script src="libraries/pointerlock.js" type="text/javascript"></script>
+
+	<script src="sketch.js" type="text/javascript"></script>
+</head>
+<body>
+	<div class="sidebarL"></div>
+	<div class="centre">
+		<div id="GameDiv" class="Game">
+			 <div id="fullGame" style="color: white;">
+
+				 <output id="infoText" class="centredTextWindow" style="z-Index: -1;"></output>
+
+				 <div id="sketch-holder" style="height: calc(100% / (16 / 9));">
+					 <div id="mapDiv" style="position: absolute;  z-index: -1; pointer-events: none;">
+						 <canvas id="mapCanvas" style="z-index: 2; position:absolute; left:0px; top:0px;"></canvas>
+						 <canvas id="PlayerCanvas" style="z-index: 1; position:absolute; left:0px; top:0px;"></canvas>
+					 </div>
+					 <canvas id="bloodCanvas" width="1000" height="563" style="z-index: 3; position: absolute; pointer-events: none;"></canvas>
+				 </div>
+
+				 <div id="ui">
+
+						 <output id="fps" style="position: absolute; top: 0px; right: 0px; font-size: 20px;"></output>
+
+						 <output id="health" style="position: absolute; left: calc(50% - 495px); bottom: 0px; font-size: 75px"></output>
+						 <output id="clip" style="position: absolute; left: calc(50% - 495px); bottom: 80px; font-size: 30px"></output>
+						 <output id="ammo" style="position: absolute; left: calc(50% - 495px); bottom: 110px; font-size: 20px"></output>
+
+						 <div id="circle"></div>
+
+			 		</div>
+
+			 </div>
+
+		</div>
+		<div id="restOfThePage" class="restOfThePage">
+			 <pre class="text">
+			 This is a wolfenstien 3d remake in javascript using the HTML5 canvas and the p5js library.
+			 Controls:
+
+			 [W, A, S, D]		Player movement <!--Although the text is not aligned in this HTML, it will appear aligned on the webpage -->
+			 [MOUSE]			Used to look around
+			 [LEFT CLICK]		Shoot
+			 [SHIFT]			Zoom scoped weapon
+			 [O]				Open/Close options
+
+			 If the mouse is supported the mouse can be used to aim and click to fire,
+			 should the browser not support this feature the left and right arrow keys
+			 are to be used to aim and space to fire.
+			 </pre>
+		</div>
+	</div>
+	<div class="sidebarR"></div>
+
+</body>
+</html>

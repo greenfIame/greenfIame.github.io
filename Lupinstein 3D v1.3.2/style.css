@@ -1,0 +1,168 @@
+@font-face {
+  font-family: TitleFont;
+  src: local(fonts/RETURN TO CASTLE.tff);
+}
+
+.centredTextFullscreen {
+  pointer-events: none;
+  width: 100%;
+  position: absolute;
+  left: 0px;
+  margin: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-size: 30px;
+}
+
+canvas {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+}
+
+@myCanvas {
+	background-color: darkgrey;
+}
+
+.centredTextWindow {
+  pointer-events: none;
+  padding-top: 260px;
+  width: 100%;
+  position: absolute;
+  left: 0px;
+  margin: 0;
+  font-size: 30px;
+}
+
+html, body {
+	height: 100vh;
+	background-color: darkgrey;
+	text-align: center;
+
+}
+
+body {
+	margin: 0;
+}
+
+output {
+  pointer-events: none;
+	position: absolute;
+	left: calc(100% - 45px);
+}
+
+.slider {
+	position: relative;
+	right: 75px;
+}
+
+.Game {
+	font-family: TitleFont, "Arial Black", Gadget, sans-serif;
+	width: inherit;
+	height: 563px;
+	float: right;
+	background-color: red;
+}
+
+.centre {
+	width: 1000px;
+	height: 100%;
+	float: left;
+	background-color: black;
+}
+
+.sidebarL {
+	width: calc((100% - 1000px)/2);
+	height: 100%;
+	float: left;
+	background-image: url(assets/WallTexture.png);
+}
+
+.sidebarR {
+	width: calc((100% - 1000px)/2);
+	height: 100%;
+	float: right;
+	background-image: url(assets/WallTexture.png);
+}
+
+.optionsForm {
+	color: white;
+	position: absolute;
+	top: 281px;
+	left: 50%;
+}
+
+.restOfThePage {
+	width: inherit;
+	height: calc(100% - 563px);
+	color: black;
+	float: left;
+	overflow: auto;
+  background-image: url(assets/SteelRepeat.jpg);
+}
+
+.text {
+	font-family: "arial black";
+	text-align: left;
+}
+
+.introductionDiv {
+	width: 1000px;
+}
+
+.enemyDiv {
+	width: 1000px;
+}
+
+.weaponDiv {
+	width: 1000px;
+}
+
+#circle {
+  position: absolute;
+  left: 495px;
+  top: 275px;
+  width: 8px;
+  height: 8px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: red;
+}
+
+h1 {
+  font: 600% futura, sans-seriff;
+  line-height: 2;
+  color: firebrick;
+  text-align: center;
+}
+
+h2 {
+	font: 200% futura, sans-seriff;
+	color: firebrick;
+  text-align: center
+}
+
+p {
+	font: 120% helvetica, sans-serif;
+	line-height: 1.88889;
+	color: black;
+	margin: 0;
+	padding: 0;
+  text-align: center;
+}
+
+button {
+    background-color: indianred;
+    border: none;
+    color: white;
+    padding: 100px 300px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 64px;
+}
