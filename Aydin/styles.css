@@ -1,0 +1,566 @@
+#thefile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+#thefile + label {
+	font-size: 6em;
+  color: black;
+  display: inline-block;
+	font-family: sans-serif;
+	width: 100%;
+	height: 100%;
+	line-height: 2em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+	cursor: pointer;
+	-webkit-user-select: none; /* Safari 3.1+ */
+	-moz-user-select: none; /* Firefox 2+ */
+	-ms-user-select: none; /* IE 10+ */
+	user-select: none; /* Standard syntax */
+}
+
+canvas {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+}
+
+#canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+	width: 57%;
+	height: 40%;
+	border-left: 1vw solid #111;
+	border-right: 1vw solid #111;
+	border-top: 1vh solid #111;
+	border-bottom: 1vh solid #333;
+	background-color: #222;
+}
+
+#keyboardWrapper {
+	position: absolute;
+	width: 70%;
+	height: 45%;
+	bottom: 0;
+	left: 0;
+	overflow-x: hidden;
+	background-color: rgb(255, 240, 240);
+	border-right: 0.1vw solid black;
+}
+
+#keyboard {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: -5%;
+	background-color: rgb(255, 240, 240);
+}
+
+.whitekey {
+	width: calc(10% - 0.1vw);
+	height: calc(100% - 0.2vw);
+	border: solid;
+	border-width: 0.1vw 0.1vw 0.1vw 0.1vw;
+	border-color: black;
+	position: absolute;
+	top: 0;
+	background-color: white;
+}
+
+.blackkey {
+	width: calc(6% - 2vw + 0.1vw);
+	height: calc(65% - 1vw);
+	border: solid;
+	border-width: 0 1vw 1vw 1vw;
+	border-color: black #333 #2a2a2a #333;
+	position: absolute;
+	top: 0;
+	background-color: #222;
+	z-index: 1;
+}
+
+#player {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 38%;
+	height: 42%;
+	background-color: #1a1a1a;
+}
+
+#cassetteWrapper {
+	position: absolute;
+	background-color: #333;
+	border-radius: 0.5vmin;
+}
+
+#cassette {
+	position: absolute;
+	left: 1vmin;
+	bottom: 1vmin;
+	width: calc(100% - 2vmin);
+	height: calc(100% - 2vmin);
+	border-radius: 2vmin;
+	background: repeating-linear-gradient(#1a1a1a 0, #1a1a1a 2%, #222 2%, #222 4%);
+	overflow: hidden;
+}
+
+#ridge {
+	position: absolute;
+	left: 15%;
+	top: 81%;
+	width: 70%;
+	height: 19%;
+	background: repeating-linear-gradient(#222 6%, #222 16%, #2a2a2a 16%, #2a2a2a 26%);
+	clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+}
+
+#inner {
+	position: absolute;
+	left: 24%;
+	top: 34%;
+	width: 52%;
+	height: 32%;
+	background-color: #1a1a1a;
+	border-radius: 2em;
+}
+
+#window {
+	position: absolute;
+	left: 27%;
+	top: 10%;
+	width: 46%;
+	height: 80%;
+	background-color: #333;
+	overflow: hidden;
+}
+
+.spindle {
+	position: absolute;
+	top: calc((100% - 18em) / 2);
+	width: 18em;
+	height: 18em;
+	background-color: #ddd;
+	
+	border-radius: 100em;
+}
+
+.tape {
+	position: absolute;
+	-webkit-transform: translate(-50%, -50%); 
+	transform: translate(-50%, -50%);
+	width: 0;
+	height: 0;
+	border-radius: 100em;
+	border: 12em solid #111;
+	top: 50%;
+}
+
+@keyframes Rotate {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+
+.cogHolder {
+	position: absolute;
+	top: calc((100% - 9em) / 2);
+	width: 9em;
+	height: 9em;
+}
+
+.cog {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #333;
+	border-radius: 9em;
+	animation: Rotate 3s infinite linear;
+	animation-play-state: paused;
+}
+
+.cog div {
+	position: absolute;
+	left: calc((100% - 1em) / 2);
+	top: 0;
+	width: 1em;
+	height: 100%;
+	background-color: #ddd;
+	clip-path: polygon(100% 0, 100% 15%, 0 15%, 0 85%, 100% 85%, 100% 100%, 0 100%, 0 85%, 0 15%, 0 0);
+}
+.cog div:nth-child(2) {
+	transform: rotate(60deg);
+}
+.cog div:nth-child(3) {
+	transform: rotate(120deg);
+}
+
+#labelHighlight {
+	position: absolute;
+	left: 10%;
+	top: 5%;
+	width: 80%;
+	height: 5%;
+	background-color: #c22;
+	border-radius: 1vmin 1vmin 0 0;
+}
+
+#label {
+	position: absolute;
+	left: 10%;
+	top: 10%;
+	width: 80%;
+	height: 20%;
+	background-color: white;
+}
+
+#labelStripes {
+	position: absolute;
+	left: 10%;
+	top: 30%;
+	width: 80%;
+	height: 50%;
+	background: repeating-linear-gradient(#444 0, #444 3%, white 3%, white 6%);
+	border-radius: 0 0 1vmin 1vmin;
+}
+
+#controls {
+	position: absolute;
+	width: 100%;
+	height: calc(20% + 0.6vw);
+	left: 0;
+	bottom: 0;
+}
+
+#controls table, td {
+  border: 0.3vw solid #222;
+  border-collapse: collapse;
+}
+
+#controls table {
+	width: 100%;
+	height: 100%;
+}
+
+#controls td {
+	background-color: #444;
+}
+
+#controls td * {
+	pointer-events: none;
+}
+
+#controls .active {
+	-webkit-filter: brightness(80%); /* Safari 6.0 - 9.0 */
+  filter: brightness(80%);
+	cursor: default;
+}
+
+#controls .active > div {
+	position: relative;
+	top: 0.2vmin;
+}
+
+.controller {
+	cursor: pointer;
+}
+
+.controller:active {
+	-webkit-filter: brightness(80%); /* Safari 6.0 - 9.0 */
+  filter: brightness(80%);
+}
+
+.controller:active > div {
+	position: relative;
+	top: 0.2vmin;
+}
+
+.controlButton {
+	border-radius: 50%;
+	border: 0.3vw solid #222;
+	width: 6vmin;
+	height: 6vmin;
+	margin: 0 auto;
+}
+
+#playButton {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 2vmin 0 2vmin 3.4vmin;
+	border-color: transparent transparent transparent #222;
+	position: relative;
+	left: 1.7vmin;
+	top: 1vmin;
+}
+
+#FFButton {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 2vmin 0 2vmin 1.7vmin;
+	border-color: transparent transparent transparent #222;
+	position: relative;
+	left: 2vmin;
+	top: 1vmin;
+	display: inline-block;
+	margin-left: -0.3vmin;
+}
+
+#stopButton {
+	width: 3vmin;
+	height: 3vmin;
+	background-color: #222;
+	position: relative;
+	left: 1.85vmin;
+	top: 1.5vmin;
+	display: inline-block;
+	margin-left: -0.3vmin;
+}
+
+#pauseButton {
+	width: 1.1vmin;
+	height: 4vmin;
+	background-color: #222;
+	position: relative;
+	left: 1.7vmin;
+	top: 1vmin;
+	display: inline-block;
+	margin-right: 0.4vmin;
+}
+
+#recButton {
+	width: 3vmin;
+	height: 3vmin;
+	border-radius: 2vmin;
+	background-color: #222;
+	position: relative;
+	left: 1.5vmin;
+	top: 1.5vmin;
+}
+
+#audioControls {
+	position: absolute;
+	top: calc(40% + 2vh);
+	left: 0;
+	width: 70%;
+	height: 13%;
+	background: #444;
+	border-right: 0.1vw solid #444;
+	-webkit-user-select: none; /* Safari 3.1+ */
+	-moz-user-select: none; /* Firefox 2+ */
+	-ms-user-select: none; /* IE 10+ */
+	user-select: none; /* Standard syntax */
+}
+
+.dial {
+	position:relative;
+	width: 14vmin;
+	height: 13vmin;
+	float: left;
+	margin: 0 calc(7vw - 7vmin) 0 calc(7vw - 7vmin);
+}
+
+.dial * {
+	pointer-events: none;
+}
+
+.dialLabel {
+	position: absolute;
+	bottom: 1%;
+	left: 0;
+	height: auto;
+	width: 100%;
+	text-align: center;
+	font-size: 2.4vmin;
+	font-family: sans-serif;
+	color: #222;
+}
+
+dot {
+	position: absolute;
+	left: 12%;
+	top: calc(9% + 7vmin*0.6);
+	width: 5%;
+	height: 5%;
+	background: black;
+	border-radius: 100vw;
+	transform-origin: calc(((50 - 10) / 5) * 100%) 50%;
+	
+}
+
+back {
+	position: absolute;
+	position: absolute;
+	top: 12%;
+	left: calc(50% - 30%);
+	width: calc(14vmin*0.6);
+	height: calc(14vmin*0.6);
+	background: linear-gradient(135deg, rgb(200, 230, 250) 0%, rgb(100, 115, 120) 100%);
+	border-radius: 50vw;
+	font-size: calc((14vmin*0.6) / 100);
+}
+
+disk {
+	border: 2em solid #777;
+	background: linear-gradient(135deg, #444 0%, #999 50%, #444 100%);
+  position: absolute;
+  top: 14em;
+  left: 14em;
+  height: 68em;
+  width: 68em;
+	border-radius: 36em;
+	z-index: 1;
+}
+
+flower {
+  background: linear-gradient(45deg, #333 0%, #aaa 50%, #333 100%);
+  position: absolute;
+  top: 15em;
+  left: 15em;
+  width: 70em;
+  height: 70em;
+	border-radius: 10em;
+	transform-origin: 50% 50%;
+	transition-property: transform;
+}
+
+flowerb, flowera {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 70em;
+  width: 70em;
+	border-radius: 10em;
+}
+
+flowerb {
+	background: linear-gradient(15deg, #444 0%, #aaa 50%, #333 100%);
+  -webkit-transform: rotate(30deg);
+     -moz-transform: rotate(30deg);
+      -ms-transform: rotate(30deg);
+       -o-transform: rotate(30deg);
+}
+flowera {
+	background: linear-gradient(-15deg, #444 0%, #aaa 50%, #333 100%);
+  -webkit-transform: rotate(60deg);
+     -moz-transform: rotate(60deg);
+      -ms-transform: rotate(60deg);
+       -o-transform: rotate(60deg);
+}
+
+marking {
+	background: #555;
+  position: absolute;
+  left: 47em;
+  top: 15em;
+  height: 25em;
+  width: 6em;
+	z-index: 1;
+	transform-origin: 50% 135%;
+}
+
+#sensitivity {
+	position: absolute;
+	left: 59%;
+	top: 0;
+	width: 3%;
+	height: 42%;
+	background: #1a1a1a;
+}
+
+#track {
+	position: absolute;
+	left: 37.5%;
+	top: 5%;
+	width: 25%;
+	height: 90%;
+	background: #611;
+	border-radius: 5px;
+	pointer-events: none;
+}
+
+#thumb {
+	position: absolute;
+	left: 8%;
+	top: 90%;
+	width: 84%;
+	height: 8%;
+	background: black;
+	pointer-events: none;
+	border-radius: 30%;
+}
+
+#thumb::before {
+	content: "";
+	position: absolute;
+	left: 5%;
+	top: 5%;
+	height: 90%;
+	width: 90%;
+	background: white;
+	pointer-events: none;
+	border-radius: 30%;
+}
+
+#waveForm {
+	position: absolute;
+	top: 42%;
+	right: 0;
+	width: 30%;
+	height: 58%;
+	background-color: #444;
+	overflow: hidden;
+	border-left: 1vw solid #2a2a2a;
+	border-right: 1vw solid #2a2a2a;
+	border-top: 1vh solid #222;
+	border-bottom: 1vh solid #333;
+	box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+	overflow: hidden;
+}
+
+#custom_waveform {
+	position: absolute;
+	top: 0;
+	left: 5px;
+	width: calc(100% - 10px);
+	height: 100%;
+	stroke: #6c6;
+	stroke-width: 1%;
+	fill: #6c6;
+}
+
+#envelopeValue {
+	position: absolute;
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	border: none;
+	padding: 0;
+	left: 100%;
+}
+
+input:focus {
+	outline: 0;
+}
+
+.clicker {
+	stroke-width: 30;
+	opacity: 0;
+}
+
+#custom_waveform *:not(.clicker) {
+	pointer-events: none;
+}

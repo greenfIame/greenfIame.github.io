@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>project</title>
+
+    <script src="sketch.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="styles.css">
+
+  </head>
+  <body onload="start()">
+		
+		<canvas id="canvas"></canvas>
+		<div id="sensitivity" onmousedown="dragging = true; mouseMove(event); return false">
+			<div id="track"></div>
+			<div id="thumb"></div>
+		</div>
+		<div id="player">
+			<div id="cassetteWrapper">
+				<div id="cassette">
+					<div id="labelHighlight"></div>
+					<div id="label">
+						<input type="file" id="thefile" accept="audio/*"></input>
+						<label id="fileLabel" for="thefile">Choose a file</label>
+					</div>
+					<div id="labelStripes"></div>
+					<div id="ridge"></div>
+					<svg viewBox="0 0 17.5 10" width="100%" style="position: absolute; top: 2%; pointer-events: none;">
+					  <path d="M2.5,10 L4.5,8 L13,8 L15,10" fill="none" stroke="#333" stroke-width="0.1"/>
+					</svg>
+					<div id="inner">
+						<div id="window">
+							<div class="tape" style="left: -29.5%;"></div>
+							<div class="spindle" style="left: -66.5%;"></div>
+							<div class="tape" style="left: 129.5%;"></div>
+							<div class="spindle" style="right: -66.5%;"></div>
+						</div>
+						<div class="cogHolder" style="left: 5%;"><div class="cog">
+							<div></div><div></div><div></div>
+							<svg height="100%" width="100%">
+							  <circle cx="50%" cy="50%" r="46%" stroke="#ddd" stroke-width="3" fill="none" />
+							</svg>
+						</div></div>
+						<div class="cogHolder" style="right: 5%;"><div class="cog">
+							<div></div><div></div><div></div>
+							<svg height="100%" width="100%">
+							  <circle cx="50%" cy="50%" r="46%" stroke="#ddd" stroke-width="3" fill="none" />
+							</svg>
+						</div></div>
+					</div>
+				</div>
+			</div>
+			<div id="controls">
+				<table>
+					<tr>
+						<td class="controller" onclick="cassetteRecord(this)"><div class="controlButton"><div id="recButton"></div></div></div></td>
+						<td class="controller" onmousedown="r()" onclick="cassetteControls(this, 1)"><div class="controlButton"><div id="playButton"></div></div></td>
+						<td class="controller" onmousedown="r()" onclick="cassetteControls(this, 3)"><div class="controlButton"><div id="FFButton"></div><div id="FFButton"></div></div></td>
+						<td class="controller" onmousedown="r()" onclick="cassetteControls(this, 2)"><div class="controlButton"><div id="stopButton"></div></div></td>
+						<td class="controller active" onmousedown="r()" onclick="cassetteControls(this, 4)" id="pauser"><div class="controlButton"><div id="pauseButton"></div><div id="pauseButton"></div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="keyboardWrapper"><div id="keyboard"></div></div>
+		<audio id="audio"></audio>
+		<div id="audioControls">
+			<div class="dial" title="4, 0, 180, 1, 0, 3">
+				<div class="dialLabel">Waveform</div>
+				<back><disk></disk>
+					<flower style="transform: rotate(-90deg); background: linear-gradient(135deg, rgb(51, 51, 51) 0%, rgb(170, 170, 170) 50%, rgb(51, 51, 51) 100%);">
+						<flowerB style="background: linear-gradient(105deg, rgb(68, 68, 68) 0%, rgb(170, 170, 170) 50%, rgb(51, 51, 51) 100%);"></flowerB>
+						<flowerA style="background: linear-gradient(75deg, rgb(68, 68, 68) 0%, rgb(170, 170, 170) 50%, rgb(51, 51, 51) 100%);"></flowerA>
+					</flower>
+					<marking style="transform: rotate(-90deg)"></marking>
+				</back>
+			</div>
+			<div class="dial" title="6, -30, 210, 0, 0, 1">
+				<div class="dialLabel">Synth</div>
+				<back><disk></disk><flower><flowerB></flowerB><flowerA></flowerA></flower><marking></marking></back>
+			</div>
+			<div class="dial" title="6, -30, 210, 0, 0, 10">
+				<div class="dialLabel">Mic</div>
+				<back><disk></disk><flower><flowerB></flowerB><flowerA></flowerA></flower><marking></marking></back>
+			</div>
+			<div class="dial" title="6, -30, 210, 0, 0, 1">
+				<div class="dialLabel">Music</div>
+				<back><disk></disk><flower><flowerB></flowerB><flowerA></flowerA></flower><marking></marking></back>
+			</div>
+			<div class="dial" title="6, -30, 210, 0, 0, 1">
+				<div class="dialLabel">Gain</div>
+				<back><disk></disk><flower><flowerB></flowerB><flowerA></flowerA></flower><marking></marking></back>
+			</div>
+		</div>
+		<div id="waveForm">
+			<svg id="custom_waveform" onclick="if (event.target == this) {envelopeValue.style.left = '100%'}"></svg>
+			<input id="envelopeValue" oninput="changeEnvelope(event, this)" />
+		</div>
+  </body>
+</html>
