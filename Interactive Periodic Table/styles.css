@@ -285,7 +285,7 @@ p {
 	fill:#666;
 	left: 32.5%;
 	top: calc(100% / 24);
-	animation-name: example;
+	animation-name: loading;
   animation-duration: 4s;
 	animation-iteration-count: infinite;
 }
