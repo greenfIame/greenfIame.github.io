@@ -45,11 +45,12 @@ function start() {
 		createButtons()
 		createPlaceholders()
 		layout()
-		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 2000)
+		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
 	}
+}
 
-	//https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0
-	// var xhttp = new XMLHttpRequest()
+//https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0
+// var xhttp = new XMLHttpRequest()
 // 	xhttp.onreadystatechange = function() {
 // 		console.log(["request not initialized", "server connection established", "request received", "processing request", "request finished and response is ready"][this.readyState])
 // 	}
@@ -61,7 +62,6 @@ function start() {
 // 	}
 //   xhttp.open("GET", 'https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0', true)
 //   xhttp.send()
-}
 
 function scrapeElements() {
 	loading.style.display = "block"
@@ -191,7 +191,9 @@ function addElement(that){
 		createPlaceholders()
 		layout()
 		loading.style.display = "none"
-		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 2000)
+		if (JSON.parse(window.localStorage.IPT).length) {
+			showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
+		}
 	}
 }
 
