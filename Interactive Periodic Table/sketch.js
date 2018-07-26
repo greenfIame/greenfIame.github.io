@@ -65,6 +65,8 @@ function start() {
 
 function scrapeElements() {
 	loading.style.display = "block"
+
+	//Also needs to hide buttons
 	elements = []
 	var domElements = document.querySelectorAll(".element")
 	for (var i = 0; i < domElements.length; i++) {
