@@ -24,7 +24,7 @@ function scroll_() {
 			scrollShowing = true
 		}
 	} else if (scrollShowing) {
-		toTop.style.opacity = 0
+		toTop.style.opacity = ""
 		scrollShowing = false
 	}
 }
