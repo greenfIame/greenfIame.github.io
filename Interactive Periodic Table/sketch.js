@@ -64,6 +64,7 @@ function start() {
 }
 
 function scrapeElements() {
+	loading.style.display = "block"
 	request("https://en.wikipedia.org/wiki/Periodic_table", function(that){
 		var site = eval(that.responseText.slice(26))
 		var links = site.contents.match(/<span class="nounderlines"><a href="\/wiki\/([^"])*(?=")/g)
@@ -180,6 +181,7 @@ function addElement(that){
 		createButtons()
 		createPlaceholders()
 		layout()
+		loading.style.display = "none"
 		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 2000)
 	}
 }
