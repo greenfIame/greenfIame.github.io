@@ -1,7 +1,7 @@
 function start() {
 	//						https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0
 	$.ajax( {
-		url: 'https://en.wikipedia.org/w/api.php',
+		url: 'https://en.wikipedia.org/w/api.php?origin=https://greenfiame.github.io/Test%20XHTTP/index.html',
 		data: {
 			action: 'parse',
 			format: 'json',
