@@ -15,21 +15,15 @@ function start() {
 //   xhttp.open("GET", url, true)
 //   xhttp.send()
 	
-	$.ajax( {
-    url: 'https://en.wikipedia.org/w/api.php',
-    data: {
-      action: 'parse',
-      format: 'json',
-			page: 'helium',
-			section: '0'
-      origin: 'https://greenfiame.github.io/Test%20XHTTP/index.html'
-    },
-    xhrFields: {
-       withCredentials: true
-    },
-    dataType: 'json'
-	} ).done( function ( data ) {
-		alert(data);
-	} );
+$.ajax( {
+    url: remoteUrlWithOrigin,
+    data: queryData,
+    dataType: 'json',
+    type: 'POST',
+    headers: { 'Api-User-Agent': 'Example/1.0' },
+    success: function(data) {
+       console.log(data)
+    }
+} );
 }
 
