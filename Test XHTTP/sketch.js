@@ -14,16 +14,40 @@ function start() {
 // 	}
 //   xhttp.open("GET", url, true)
 //   xhttp.send()
-	
-$.ajax( {
-    url: remoteUrlWithOrigin,
-    data: queryData,
+	/*
+	$.ajax( {
+	    url: 'https://en.wikipedia.org/w/api.php',
+	    data: {
+				action: 'parse',
+				format: 'json',
+				page: 'helium',
+				section: '0'
+				origin: 'https://greenfiame.github.io/Test%20XHTTP/index.html'
+	    },
+	    xhrFields: {
+	       withCredentials: true
+	    },
+	    dataType: 'json'
+	} ).done( function ( data ) {
+		alert(data);
+	} );
+	*/
+	$.ajax( {
+    url: 'https://en.wikipedia.org/w/api.php',
+    data: {
+			action: 'parse',
+			format: 'json',
+			page: 'helium',
+			section: '0'
+			origin: 'https://greenfiame.github.io/Test%20XHTTP/index.html'
+    },
     dataType: 'json',
-    type: 'POST',
+    type: 'GET',
     headers: { 'Api-User-Agent': 'Example/1.0' },
     success: function(data) {
-       console.log(data)
+			console.log(data)
+       // do something with data
     }
-} );
+	} );
 }
 
