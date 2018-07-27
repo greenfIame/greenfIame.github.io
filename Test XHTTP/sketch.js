@@ -38,7 +38,7 @@ function start() {
 			action: 'parse',
 			format: 'json',
 			page: 'helium',
-			section: '0'
+			section: '0',
 			origin: 'https://greenfiame.github.io/Test%20XHTTP/index.html'
     },
     dataType: 'json',
