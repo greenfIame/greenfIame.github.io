@@ -4,6 +4,10 @@ body {
 	font-family: Futura, sans-serif;
 }
 
+img {
+	position: absolute;
+}
+
 #staticBackgroundContainer {
 	position: fixed;
 	left: 0;
@@ -13,8 +17,8 @@ body {
 	overflow: hidden;
 }
 
-img {
-	position: absolute;
+#header {
+	height: 100vh;
 }
 
 #headerText {
@@ -92,10 +96,6 @@ h3 {
 ul {
 	float: left;
 	padding-left: 20px;
-}
-
-#header {
-	height: 100vh;
 }
 
 #about {
