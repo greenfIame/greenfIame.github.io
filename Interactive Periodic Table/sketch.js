@@ -1,16 +1,10 @@
+//Global variable
 var layoutType = "periodic"
+var highlightType = "none"
 var sideBar = false
 var elementsDiv
-var highlightType = "none"
 var searchTimeout = {clear: null, fade: null}
-
-var decayModes = {
-	"ε": "electron capture",
-	"β−": "beta decay",
-	"α": "alpha decay"
-}
-
-//Save element data
+var showHelp
 
 var elements = []
 var elementsLength
@@ -19,6 +13,7 @@ var elementsByAtomicNumber
 
 var categoryText = ["noble gas", "diatomic nonmetal", "polyatomic nonmetal", "metalloid", "post-transition metal", "transition metal", "alkaline earth metal", "alkali metal", "lanthanide", "actinide"]
 
+//Checks for pre-exiting local storage items and either loads them or creates space
 //window.localStorage.removeItem('IPT')
 if (!window.localStorage.IPT) {
 	window.localStorage.IPT = JSON.stringify(elements)
@@ -26,14 +21,14 @@ if (!window.localStorage.IPT) {
 	elements = JSON.parse(window.localStorage.IPT)
 }
 
-var showHelp
-
+//Function called once the body of the page loads
 function start() {
 
 	elementsDiv = document.getElementById("elements")
 	window.onresize = windowResize
 	windowResize()
 
+	//Either scrapes elements or generates DOM from the data
 	if (elements.length == 0) {
 		scrapeElements()
 	} else {
@@ -41,32 +36,15 @@ function start() {
 			createDOMelement(elements[i])
 		}
 
-		elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
-		createButtons()
-		createPlaceholders()
-		layout()
-		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
+		loadedElements()
 	}
 }
 
-//https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0
-// var xhttp = new XMLHttpRequest()
-// 	xhttp.onreadystatechange = function() {
-// 		console.log(["request not initialized", "server connection established", "request received", "processing request", "request finished and response is ready"][this.readyState])
-// 	}
-//   xhttp.onload = function() {
-//     console.log(this)
-//   }
-// 	xhttp.onerror = function() {
-// 		console.log("failed")
-// 	}
-//   xhttp.open("GET", 'https://en.wikipedia.org/w/api.php?action=parse&format=json&page=helium&section=0', true)
-//   xhttp.send()
-
+//Starts the scraping from wikipedia
 function scrapeElements() {
 	loading.style.display = "block"
 
-	//Also needs to hide buttons
+	//Removes dropdown buttons (if any)
 	elements = []
 	var domElements = document.querySelectorAll(".element")
 	for (var i = 0; i < domElements.length; i++) {
@@ -74,49 +52,55 @@ function scrapeElements() {
 	}
 	document.getElementById("elements")
 
-	request("https://en.wikipedia.org/wiki/Periodic_table", function(that){
-		var site = eval(that.responseText.slice(26))
-		var links = site.contents.match(/<span class="nounderlines"><a href="\/wiki\/([^"])*(?=")/g)
-		elementsLength = links.length
-		for (var i = 0; i < links.length; i++) {
-			links[i] = links[i].slice(42)
-			request("https://en.wikipedia.org/wiki/" + links[i], addElement)
-		}
+	//First request gets a list of all the elements
+	request("List of chemical elements", function(that){
+		var site = JSON.parse(that.response).parse.text["*"]
+		
+		var parser = new DOMParser();
+		var doc = parser.parseFromString(site, "text/html");
+		var query = doc.evaluate("//table[contains(translate(., 'ELMNT', 'elmnt'), 'element')]/tbody/tr/td[position() = 3]/a/@href", doc, null, XPathResult.ANY_TYPE, null)
+		var node
+		elementsLength = 0
+		while (node = query.iterateNext()) {
+			elementsLength++
+			request(/[^\/]*$/.exec(node.value)[0], addElement)
+	  }
 	}, true)
 }
 
-function request(url, func, load) {
+//Requests the html of the page using the mediawiki API
+function request(page, func, load) {
+	var url = `https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${encodeURIComponent(page)}&prop=links%7Csections%7Ctext&origin=*`
 	var xhttp = new XMLHttpRequest()
-	xhttp.URL = url
-
 	if (load) {
 		xhttp.onreadystatechange = function() {
 			console.log(["request not initialized", "server connection established", "request received", "processing request", "request finished and response is ready"][this.readyState])
-
-	  }
+		}
 	}
-
   xhttp.onload = function() {
     func(this)
   }
 	xhttp.onerror = function() {
 		setTimeout(function(){
-			request(url, func, load)
+			request(page, func, load)
 		}, 1000)
 	}
-  xhttp.open("GET", 'https://allorigins.me/get?url=' + encodeURIComponent(url) + '&callback=?', true)
+  xhttp.open("GET", url, true)
+	xhttp.setRequestHeader("Api-User-Agent", "request")
   xhttp.send()
 }
 
+//Shortens most of the xpath calls (only returns the first item)
 function XPath(xpath, parent) {
 	return (parent || document).evaluate(xpath, parent || document, null, XPathResult.ANY_TYPE, null).iterateNext() || {innerHTML: "", innerText: ""}
 }
 
+//Generates objects from wikipedia page html 
 function addElement(that){
 	var parser = new DOMParser();
-	var doc = parser.parseFromString(eval(that.responseText.slice(26)).contents, "text/html");
+	var doc = parser.parseFromString(JSON.parse(that.response).parse.text["*"], "text/html");
 	var element = {
-		name: /[A-Za-z]+\w/.exec(doc.querySelector("h1.firstHeading").innerText)[0],
+		name: /[A-Za-z]+\w/.exec(JSON.parse(that.response).parse.title)[0],
 		appearance: (XPath("//tr[contains(., 'Appearance')]/td", doc).innerText||"").replace(/[\[\]0-9]/g, "").trim(),
 		category: XPath("//tr[contains(., 'Element category')]/td", doc).innerText.trim(),
 		symbol: /[A-Za-z]{1,2}$/.exec(XPath("//caption", doc).innerText)[0],
@@ -183,20 +167,26 @@ function addElement(that){
 
 	elements.push(element)
 	createDOMelement(element)
-	elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
 
 	if (elements.length == elementsLength) {
 		window.localStorage.IPT = JSON.stringify(elements)
-		createButtons()
-		createPlaceholders()
-		layout()
-		loading.style.display = "none"
-		if (JSON.parse(window.localStorage.IPT).length) {
-			showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
-		}
+		loadedElements()
 	}
 }
 
+function loadedElements() {
+	elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
+	window.localStorage.IPT = JSON.stringify(elements)
+	createButtons()
+	createPlaceholders()
+	layout()
+	loading.style.display = "none"
+	if (showHelp === undefined) {
+		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
+	}
+}
+
+//Creates a dom element from an object containing the chemical element's data
 function createDOMelement(element) {
 	DOMelement = document.createElement("div")
 	DOMelement.className = "element"
@@ -231,8 +221,8 @@ function createButtons() {
 	var element = elements[0]
 	for (var i in element) {
 
-		//You cannot sort or highlight by appearance, shells
-		if (i == "appearance" || i == "shells" || i == "Element") {
+		//You cannot sort or highlight by appearance or shells
+		if (i == "appearance" || i == "shells") {
 			continue
 		}
 
