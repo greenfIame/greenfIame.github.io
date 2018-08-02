@@ -1,0 +1,68 @@
+@font-face {
+    font-family: RTC;
+    src: url('Assets/Website Assets/RETURN TO CASTLE.ttf');
+}
+
+html, body {
+	height: 100%;
+  width: 100%;
+	margin: 0;
+}
+
+body {
+	background: url('Assets/Website Assets/StoneRepeat.png') repeat scroll top left;
+}
+
+p {
+	font-family: "Arial Black";
+	font-size: 16px;
+}
+
+canvas {
+	image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+}
+
+#center {
+	width: 100%;
+	max-width: 960px;
+	background-color: grey;
+	margin: auto;
+
+	display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#game {
+	width: 100%;
+	font-size: 0;
+	position: relative;
+}
+
+#maincanvas {
+	width: 100%;
+}
+
+#mapcanvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+#info {
+	position: relative;
+	overflow: auto;
+	flex: 1 1 auto;
+}
+
+#infoInner {
+	position: absolute;
+	box-sizing: border-box;
+	padding: 15px;
+	background: url('Assets/Website Assets/SteelRepeat+0.85.jpg');
+	min-height: 100%;
+}

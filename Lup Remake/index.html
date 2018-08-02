@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>project</title>
+
+    <script src="player.js" type="text/javascript"></script>
+    <script src="sketch.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="styles.css">
+
+  </head>
+  <body onload="start()">
+		<div id="center">
+			<div id="game">
+				<canvas id="maincanvas" width="320" height="180"></canvas>
+        <canvas id="mapcanvas" width="0" height="0">
+      </div>
+			<div id="info">
+        <div id="infoInner">
+          <span style="font: 35px RTC;">LUPINSTEIN 3D</span><br>
+          <span style="font: 30px RTC;">Info</span>
+
+  				<p>
+            This is a remake of Lupinstein 3D, my SSD majorwork in 2017.
+            It uses the html5 canvas to render the gameplay onto using raycasting to create the pseudo 3d graphics.
+            This system for rendering was first using in Wolfenstein 3D, thus the namesake.
+          </p>
+        </div>
+			</div>
+		</div>
+  </body>
+</html>
