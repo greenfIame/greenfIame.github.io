@@ -1,7 +1,7 @@
 var player = {
   pos: {x: 0.5, y: 0.5},
   heading: 0,
-  ms: 0.02,
+  ms: 0.03,
 
   update: function() {
     var v = {x: 0, y: 0}
@@ -80,13 +80,16 @@ var player = {
   },
 
   render3d: function() {
-    var ray, d
+    var a, ray, d
     ctx.fillStyle = "#a22"
+
     for (var i = 0; i < cnv.width; i++) {
-      ray = castRay(this.heading + (Math.PI/2 * (i / (cnv.width - 1)) - Math.PI/4), this.pos.x, this.pos.y)
+      a = this.heading + (Math.PI/2 * (i / (cnv.width - 1)) - Math.PI/4)
+      ray = castRay(a, this.pos.x, this.pos.y)
       d = ray.d * Math.cos(Math.PI/2 * (i / (cnv.width - 1)) - Math.PI/4)
       fill(50 + 150/((16 + d*d)/16), 20, 20)
       ctx.fillRect(i, cnv.height/2 - (cnv.height * 0.5/d)/2, 1, cnv.height * 0.5/d)
+      minictx.fillRect(Math.round(ray.x*2), Math.round(ray.y*2), 1, 1)
     }
   }
 }

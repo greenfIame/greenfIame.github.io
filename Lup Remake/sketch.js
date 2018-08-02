@@ -1,10 +1,12 @@
-var cnv, ctx, mapctx, updater, paused, map, keys = {}
+var cnv, ctx, mapctx, minictx, updater, paused, map, keys = {}
 var sensitivity = 1
 
 function start() {
 	cnv = maincanvas
 	ctx = cnv.getContext("2d")
 	mapctx = mapcanvas.getContext("2d")
+	minictx = minimap.getContext("2d")
+
 	document.addEventListener("mousemove", mousemove)
 	document.addEventListener("keydown", keydown)
 	document.addEventListener("keyup", keyup)
@@ -21,7 +23,6 @@ function start() {
 	createMap()
 	update()
 	render()
-	paused = true
 }
 
 function pl() {return document.pointerLockElement || document.mozPointerLockElement || document.webkitPointerLockElement}
@@ -86,9 +87,20 @@ function update() {
 	}
 }
 
+function updateMinimap() {
+	pos = {x: (player.pos.x + 0.15)/map.length, y: (player.pos.y + 0.23)/map[0].length, zoom: 4}
+	minimap.style.width = `${pos.zoom * 100}%`
+	minimap.style.height = `${pos.zoom * 100}%`
+	minimap.style.left = `calc(50% - ${pos.zoom*pos.x} * 100%)`
+	minimap.style.top = `calc(50% - ${pos.zoom*pos.y} * 100%)`
+	minimapWrapper.style.transform = `rotate(${-player.heading - Math.PI/2}rad)`
+	//minimapContainer.clientHeight
+}
+
 function render() {
 	render3d()
 	render2d()
+	updateMinimap()
 	if (!paused) {
 		requestAnimationFrame(render)
 	}
@@ -168,6 +180,10 @@ function createMap() {
 				mapData[j][i + 1] = "¯"
 				player.pos.x = i/2 + 0.5
 				player.pos.y = j + 0.5
+			} else if (mapData[j][i] == "@") {
+				mapData[j][i] = "¯"
+				player.pos.x = i/2 + 0.5
+				player.pos.y = j + 0.5
 			}
 			map[i/2][j] = {l: mapData[j][i] == "|" || portals[mapData[j][i]], u: mapData[j][i + 1] == "¯" || portals[mapData[j][i + 1]]}
 		}
@@ -175,4 +191,6 @@ function createMap() {
 
 	mapcanvas.width = map.length * 5
 	mapcanvas.height = map[0].length * 5
+	minimap.width = map.length * 2
+	minimap.height = map[0].length * 2
 }
