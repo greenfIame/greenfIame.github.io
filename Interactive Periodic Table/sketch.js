@@ -44,7 +44,11 @@ function start() {
 function scrapeElements() {
 	loading.style.display = "block"
 
-	//Removes dropdown buttons (if any)
+	//Removes dropdown options (if any)
+	var options = document.querySelectorAll(".selectOption:not(:first-child)")
+	for (var i = 0; i < options.length; i++) {
+		options[i].remove()
+	}
 	elements = []
 	var domElements = document.querySelectorAll(".element")
 	for (var i = 0; i < domElements.length; i++) {
@@ -90,7 +94,7 @@ function request(page, func, load) {
   xhttp.send()
 }
 
-//Shortens most of the xpath calls (only returns the first item)
+//Creates an xpath on a specific document, only returns the first match
 function XPath(xpath, parent) {
 	return (parent || document).evaluate(xpath, parent || document, null, XPathResult.ANY_TYPE, null).iterateNext() || {innerHTML: "", innerText: ""}
 }
@@ -163,7 +167,7 @@ function addElement(that){
 		element.group = null
 	}
 
-	console.log(element.name)
+	//console.log(element.name)
 
 	elements.push(element)
 	createDOMelement(element)
@@ -174,6 +178,7 @@ function addElement(that){
 	}
 }
 
+//Once the elements are loaded
 function loadedElements() {
 	elementsByAtomicNumber = insertionSort(elements, function(a, b) {return a.atomic_number - b.atomic_number}).slice(0)
 	window.localStorage.IPT = JSON.stringify(elements)
@@ -262,7 +267,7 @@ function createPlaceholders() {
 	}
 }
 
-//show the 2 placeholders
+//Show the 2 placeholders
 function showPlaceholders() {
 	for (var i = 0; i < 2; i++) {
 		document.getElementById("placeholder" + (i + 1)).style.opacity = 1
@@ -271,7 +276,7 @@ function showPlaceholders() {
 	}
 }
 
-//hides the 2 placeholders
+//Hides the 2 placeholders
 function hidePlaceholders() {
 	for (var i = 0; i < 2; i++) {
 		document.getElementById("placeholder" + (i + 1)).style.opacity = 0
@@ -331,7 +336,7 @@ function layout() {
 }
 
 //Compare 2 elements based on the layoutType.
-//If the result is negative; b > a, positive; a > b, 0; a = b
+//If the result is negative; a < b, positive; a > b, 0; a = b
 function comparison(a, b){
 	var A, B, sum, reversed = document.getElementById("reversed").checked
 
@@ -371,7 +376,7 @@ function comparison(a, b){
 	return sum
 }
 
-//An insertion sort
+//The insertion sort
 function insertionSort(list, comparison) {
 	for (var i = 0; i < list.length; i++) {
 		var j = i
@@ -571,7 +576,7 @@ function keyPress(event) {
 	}
 }
 
-//handles the reverse button
+//Handles the reverse button
 function checkReverse(that) {
 	that.checked = !that.checked
 	layout()
@@ -588,7 +593,7 @@ function hideElementData() {
 	document.getElementById("dataForm").style.opacity = "0"
 }
 
-//A binary search
+//The binary search
 function binarySearch(list, attribute, target) {
 	var min = 0, max = list.length - 1
 	var index = Math.floor((max - min)/2)
@@ -668,6 +673,51 @@ function showElementData(that) {
 		document.getElementById("diamondArrow").style.left = parseFloat(eLeft) + 4.8 + "%"
 	}
 
+}
+
+function graph(attributeX, attributeY) {
+	//graph("atomic_number", "density")
+	//graph("group", "covalent_radius")
+	hidePlaceholders()
+	max = {x: -Infinity, y: -Infinity}
+	min = {x: Infinity, y: Infinity}
+	
+	for (var i = 0; i < elements.length; i++) {
+		if (elements[i][attributeX] || elements[i][attributeX] === 0) {
+			if (elements[i][attributeX] > max.x) {
+				max.x = elements[i][attributeX]
+			}
+			if (elements[i][attributeX] < min.x) {
+				min.x = elements[i][attributeX]
+			}
+		}
+		if (elements[i][attributeY] || elements[i][attributeY] === 0) {
+			if (elements[i][attributeY] > max.y) {
+				max.y = elements[i][attributeY]
+			} 
+			if (elements[i][attributeY] < min.y) {
+				min.y = elements[i][attributeY]
+			}
+		}
+	}
+	
+	//5% < x < 95%
+	
+	for (var i = 0; i < elements.length; i++) {
+		var element = document.getElementById(elements[i].name)
+
+		if ((elements[i][attributeX] || elements[i][attributeX] === 0) && (elements[i][attributeY] || elements[i][attributeY] === 0)) {
+			var v1 = (elements[i][attributeX]-min.x)/(max.x-min.x)
+			var v2 = (elements[i][attributeY]-min.y)/(max.y-min.y)
+			element.style.left = (v1*18+0.5)*5 + "%"
+			element.style.top = ((1 - v2))*(100 - 300/12) + 100/12 + "%"
+		} else {
+			element.style.left = "-6%"
+			element.style.top = 0
+		}
+
+	}
+	
 }
 
 //Capitalises a given string
