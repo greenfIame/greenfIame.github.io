@@ -4,14 +4,13 @@ var highlightType = "none"
 var sideBar = false
 var elementsDiv
 var searchTimeout = {clear: null, fade: null}
-var showHelp
 
 var elements = []
 var elementsLength
 
 var elementsByAtomicNumber
 
-var categoryText = ["noble gas", "diatomic nonmetal", "polyatomic nonmetal", "metalloid", "post-transition metal", "transition metal", "alkaline earth metal", "alkali metal", "lanthanide", "actinide"]
+//In order to recreate this in svg I need to create a manual animation function like on thingsmadethinkable
 
 //Checks for pre-exiting local storage items and either loads them or creates space
 //window.localStorage.removeItem('IPT')
@@ -37,6 +36,10 @@ function start() {
 		}
 
 		loadedElements()
+	}
+	
+	if (layoutType == "periodic") {
+		reverseButton.className = graphButton.className = "sidebarButton inactive"
 	}
 }
 
@@ -139,25 +142,25 @@ function addElement(that){
 		element.category = element.category.replace(/[0123456789\[\]]/g, "")
 
 		if (element.category.indexOf("noble gas") != -1) {
-			element.category = 0
+			element.category = "noble gas"
 		} else if (element.category.indexOf("nonmetal") != -1 && element.category.indexOf("polyatomic") == -1) {
-			element.category = 1
+			element.category = "diatomic nonmetal"
 		} else if (element.category.indexOf("polyatomic nonmetal") != -1) {
-			element.category = 2
+			element.category = "polyatomic nonmetal"
 		} else if (element.category.indexOf("metalloid") != -1) {
-			element.category = 3
+			element.category = "metalloid"
 		} else if (element.category.indexOf("lanthanide") != -1) {
-			element.category = 8
+			element.category = "lanthanide"
 		} else if (element.category.indexOf("actinide") != -1) {
-			element.category = 9
+			element.category = "actinide"
 		} else if (element.category.indexOf("post-transition metal") != -1 && element.category.indexOf("alternatively") == -1) {
-			element.category = 4
+			element.category = "post-transition metal"
 		} else if (element.category.indexOf("transition metal") != -1) {
-			element.category = 5
+			element.category = "transition metal"
 		} else if (element.category.indexOf("alkaline earth metal") != -1) {
-			element.category = 6
+			element.category = "alkaline earth metal"
 		} else if (element.category.indexOf("alkali metal") != -1) {
-			element.category = 7
+			element.category = "alkali metal"
 		}
 	}
 	//Creating outer shell attribute
@@ -186,9 +189,6 @@ function loadedElements() {
 	createPlaceholders()
 	layout()
 	loading.style.display = "none"
-	if (showHelp === undefined) {
-		showHelp = setTimeout(function(){document.getElementById("help").style.opacity = 1}, 5000)
-	}
 }
 
 //Creates a dom element from an object containing the chemical element's data
@@ -196,7 +196,7 @@ function createDOMelement(element) {
 	DOMelement = document.createElement("div")
 	DOMelement.className = "element"
 	DOMelement.id = element.name
-	DOMelement.onclick = function(){showElementData(this)}
+	DOMelement.onclick = function(){showElementData.bind(this)()}
 	DOMelement.innerHTML = `<p class='Symbol'>${element.symbol}</p><p class='Name'>${element.name}</p><p class='AtomicNumber'>${element.atomic_number}</p></p><p class='Datapoints'></p>`
 	DOMelement.style.position = "absolute"
 	DOMelement.style.left = "47.5%"
@@ -206,12 +206,11 @@ function createDOMelement(element) {
 	if (layoutType == "periodic") {
 		var x = element.group
 		var y = element.period
-		if (!element.group) {
-			if (element.atomic_number < 89) {
-				x = 2 + element.atomic_number - 56
-			} else {
-				x = 2 + element.atomic_number - 88
-			}
+		if (56 < element.atomic_number && element.atomic_number < 72) {
+			x = 2 + element.atomic_number - 56
+			y += 3
+		} else if (88 < element.atomic_number && element.atomic_number < 104) {
+			x = 2 + element.atomic_number - 88
 			y += 3
 		}
 		DOMelement.style.left = x*5 + "%"
@@ -224,30 +223,28 @@ function createDOMelement(element) {
 //Establishing all of the options for layout and highlight
 function createButtons() {
 	var element = elements[0]
-	for (var i in element) {
+	var keys = insertionSort(Object.keys(elements[0]), (a, b) => a.toNumber() - b.toNumber())
+	for (var i = 0; i < keys.length; i++) {
 
 		//You cannot sort or highlight by appearance or shells
-		if (i == "appearance" || i == "shells") {
+		if (keys[i] == "appearance" || keys[i] == "shells") {
 			continue
 		}
 
-		var text = i.split("_")
+		var text = keys[i].split("_")
 		for (var j = 0; j < text.length; j++) {
 			text[j] = text[j].caps()
 		}
 		text = text.join(" ")
 
 		//Creating the buttons
-		document.getElementById('layoutSelectContent').innerHTML += `<div class='selectOption' id='layout_${i}' onclick='layoutChange(this)'>${text}</div>`
-
-		if (!isNaN(element[i]) || i == "phase") {
-			document.getElementById('highlightSelectContent').innerHTML += `<div class='selectOption' id='highlight_${i}' onclick='highlight(this)'>${text}</div>`
-		}
+		layoutSelectContent.innerHTML += `<div class='selectOption' id='layout_${keys[i]}' onclick="layoutChange.bind(this)(); (graphButton.checked ? graph : layout)()">${text}</div>`
+		highlightSelectContent.innerHTML += `<div class='selectOption' id='highlight_${keys[i]}' onclick="highlightChange.bind(this)(); highlight(); (graphButton.checked ? graph() : 0)">${text}</div>`
 
 	}
 
-	document.getElementById('layoutSelect').style.transition = document.getElementById('layoutSelectContent').scrollHeight/400 + "s"
-	document.getElementById('highlightSelect').style.transition = document.getElementById('highlightSelectContent').scrollHeight/400 + "s"
+	layoutSelect.style.transition = document.getElementById('layoutSelectContent').scrollHeight/400 + "s"
+	highlightSelect.style.transition = document.getElementById('highlightSelectContent').scrollHeight/400 + "s"
 }
 
 //Create placeholder elements
@@ -291,12 +288,11 @@ function periodicPlacement() {
 		var element = document.getElementById(elements[i].name)
 		var x = elements[i].group
 		var y = elements[i].period
-		if (!elements[i].group) {
-			if (elements[i].atomic_number < 89) {
-				x = 2 + elements[i].atomic_number - 56
-			} else {
-				x = 2 + elements[i].atomic_number - 88
-			}
+		if (56 < elements[i].atomic_number && elements[i].atomic_number < 72) {
+			x = 2 + elements[i].atomic_number - 56
+			y += 3
+		} else if (88 < elements[i].atomic_number && elements[i].atomic_number < 104) {
+			x = 2 + elements[i].atomic_number - 88
 			y += 3
 		}
 		element.style.left = x*5 + "%"
@@ -324,11 +320,9 @@ function move() {
 //Change the layout of the elements
 function layout() {
 	if (layoutType == "periodic") {
-		reversed.className += " inactive"
 		showPlaceholders()
 		periodicPlacement()
 	} else {
-		reversed.className = reversed.className.replace(" inactive", "")
 		hidePlaceholders()
 		elements = insertionSort(elements, comparison)
 		move()
@@ -338,7 +332,7 @@ function layout() {
 //Compare 2 elements based on the layoutType.
 //If the result is negative; a < b, positive; a > b, 0; a = b
 function comparison(a, b){
-	var A, B, sum, reversed = document.getElementById("reversed").checked
+	var A, B, sum, reversed = document.getElementById("reverseButton").checked
 
 	//Should a specific record not exist move it towards the end of the array
 	if (a[layoutType] === null || b[layoutType] === null) {
@@ -380,7 +374,7 @@ function comparison(a, b){
 function insertionSort(list, comparison) {
 	for (var i = 0; i < list.length; i++) {
 		var j = i
-		while (list[j - 1] && comparison(list[j], list[j - 1]) < 0) {
+		while (j > 0 && comparison(list[j], list[j - 1]) < 0) {
 			var temp = list[j - 1]
 			list[j - 1] = list[j]
 			list[j] = temp
@@ -391,12 +385,7 @@ function insertionSort(list, comparison) {
 }
 
 //Highlight the elements based on their distribution of the highlightType
-function highlight(that) {
-
-	document.getElementById("highlight_" + highlightType).className = document.getElementById("highlight_" + highlightType).className.replace(" active", "")
-	that.className += " active"
-	highlightType = that.id.slice(10)
-
+function highlight() {
 	if (highlightType == "none") {
 		for (var i = 0; i < elements.length; i++) {
 			var element = document.getElementById(elements[i].name)
@@ -404,12 +393,22 @@ function highlight(that) {
 			element.querySelector(".Datapoints").style.opacity = 0
 		}
 	} else {
-		if (highlightType != "phase") {
-			var max = -Infinity
-			var min = Infinity
-			for (var i = 0; i < elements.length; i++) {
-				max = (elements[i][highlightType] || elements[i][highlightType] === 0) && elements[i][highlightType] > max ? elements[i][highlightType] : max
-				min = (elements[i][highlightType] || elements[i][highlightType] === 0) && elements[i][highlightType] < min ? elements[i][highlightType] : min
+		var max = -Infinity
+		var min = Infinity
+		var fontSize = 0.4
+		for (var i = 0; i < elements.length; i++) {
+			if (elements[i][highlightType] || elements[i][highlightType] === 0) {
+				var value = elements[i][highlightType].toNumber()
+				max = Math.max(max, value)
+				min = Math.min(min, value)
+				if (isNaN(elements[i][highlightType])) {
+					textWidth.innerHTML = elements[i][highlightType]
+					textWidth.style.fontSize = fontSize + "em"
+					while (textWidth.clientWidth + 1 > elementsDiv.clientWidth * 0.05 * 0.9) {
+						fontSize -= 0.01
+						textWidth.style.fontSize = fontSize + "em"
+					}
+				}
 			}
 		}
 
@@ -417,13 +416,8 @@ function highlight(that) {
 			var element = document.getElementById(elements[i].name)
 
 
-			if (highlightType == "phase") {
-				var r = (elements[i][highlightType] == "gas" ? 255 : 100)
-				var g = (elements[i][highlightType] == "solid" ? 100 : 0)
-				var b = (elements[i][highlightType] == "liquid" ? 255 : 100)
-				element.style.backgroundColor = "rgba(" + r + ", "  + g + "," + b + ", 0.5)"
-			} else if (elements[i][highlightType] || elements[i][highlightType] === 0) {
-				var lerp = (elements[i][highlightType]-min)/(max-min)
+			if (elements[i][highlightType] || elements[i][highlightType] === 0) {
+				var lerp = (elements[i][highlightType].toNumber()-min)/(max-min)
 				element.style.backgroundColor = lerpCol(0, 255, 255, 0.5, 255, 0, 100, 0.6, lerp)
 			} else {
 				element.style.backgroundColor = "rgba(0, 0, 0, 0.1)"
@@ -431,10 +425,12 @@ function highlight(that) {
 
 			if (elements[i][highlightType] || elements[i][highlightType] === 0) {
 				element.querySelector(".Datapoints").style.opacity = 1
+				element.querySelector(".Datapoints").style.fontSize = fontSize + "em"
+				element.querySelector(".Datapoints").style.bottom = `calc(25% - ${fontSize}ex)`
 			  if (highlightType == "phase" || highlightType == "discovery Year" || highlightType == "category") {
 			 		element.querySelector(".Datapoints").innerHTML = elements[i][highlightType]
-			 	} else if (window[highlightType + "Text"]) {
-			 		element.querySelector(".Datapoints").innerHTML = window[highlightType + "Text"][elements[i][highlightType]]
+			 	} else if (isNaN(elements[i][highlightType])) {
+			 		element.querySelector(".Datapoints").innerHTML = elements[i][highlightType]
 			 	} else {
 					element.querySelector(".Datapoints").innerHTML = elements[i][highlightType].toFixed(1)
 				}
@@ -463,14 +459,8 @@ function windowResize() {
 	resize()
 }
 
-//Move the sidebar out/ind
+//Move the sidebar out/in
 function moveSideBar() {
-	if (showHelp) {
-		clearInterval(showHelp)
-		document.getElementById("help").style["-webkit-transition"] = "opacity 3s, right 1s"
-		document.getElementById("help").style.opacity = 0
-	}
-
 	hideElementData()
 	sideBar = !sideBar
 	elementsDiv.style.transition = '1s'
@@ -495,41 +485,50 @@ function resize() {
 		//Set aspect ratio by height
 		elementsDiv.style.width = "calc(((100vh - 30px)/60) * 100)"
 		elementsDiv.style.height = "calc(100vh - 30px)"
-		elementsDiv.style["font-size"] = parseInt(((window.innerHeight-30)/60*100)/37) + "px"
+		elementsDiv.style.fontSize = parseInt(((window.innerHeight-30)/60*100)/37) + "px"
 		document.getElementById("diamondArrow").style.fontSize = `0.78vh`
 		document.getElementById("dataText").style.fontSize = `calc((((100vh - 30px)/60)*100) / 85)`
 	} else {
 		//Set aspect ratio by width
 		elementsDiv.style.width = `calc(100vw - ${rhs}px)`
 		elementsDiv.style.height = `calc((100vw - ${rhs}px)*0.6)`
-		elementsDiv.style["font-size"] = parseInt((window.innerWidth - rhs)/37) + "px"
-
+		elementsDiv.style.fontSize = parseInt((window.innerWidth - rhs)/37) + "px"
 		document.getElementById("diamondArrow").style.fontSize = `calc((100vw - ${rhs}px) * 0.005)`
 		document.getElementById("dataText").style.fontSize = `calc((100vw - ${rhs}px)/90)`
 	}
 
-	document.getElementById("help").style.right = `calc(${rhs}px + 24px)`
 	document.getElementById("Title").style.width = `calc(100vw - ${rhs}px)`
 	document.getElementById("sidebar").style.width = `${rhs}px`
 	document.getElementById("sidebarHandle").style.right = `${rhs}px`
 }
 
 //Show the contents of a dropdown div
-function showContent(that) {
-	that.style.height = that.scrollHeight + 'px'
+function showContent() {
+	this.style.height = this.scrollHeight + 'px'
 }
 
 //Hide the contents of a dropdown div
-function hideContent(that) {
-	that.style.height = 'calc(1em + 10px)'
+function hideContent() {
+	this.style.height = 'calc(1em + 10px)'
 }
 
 //Change the layout of the elements
-function layoutChange(that) {
+function layoutChange() {
 	document.getElementById("layout_" + layoutType).className = document.getElementById("layout_" + layoutType).className.replace(" active", "")
-	that.className += " active"
-	layoutType = that.id.slice(7)
-	layout()
+	this.className += " active"
+	layoutType = this.id.slice(7)
+	if (layoutType == "periodic") {
+		reverseButton.className = graphButton.className = "sidebarButton inactive"
+	} else {
+		reverseButton.className = graphButton.className = "sidebarButton"
+	}
+}
+
+//Change the highlight of the elements
+function highlightChange() {
+	document.getElementById("highlight_" + highlightType).className = document.getElementById("highlight_" + highlightType).className.replace(" active", "")
+	this.className += " active"
+	highlightType = this.id.slice(10)
 }
 
 //Handle a keypress and highlight search results
@@ -576,15 +575,16 @@ function keyPress(event) {
 	}
 }
 
-//Handles the reverse button
-function checkReverse(that) {
-	that.checked = !that.checked
-	layout()
-	that.querySelector("#reverseCheckbox").checked = that.checked
-	if (that.checked) {
-		that.style.backgroundColor = "#bbb"
-	} else {
-		that.style.backgroundColor = ""
+//Handles the checkboxes
+function checkbox() {
+	if (!this.className.match('inactive')) {
+		this.checked = !this.checked
+		this.querySelector("input").checked = this.checked
+		if (this.checked) {
+			this.style.backgroundColor = "#bbb"
+		} else {
+			this.style.backgroundColor = ""
+		}
 	}
 }
 
@@ -618,8 +618,8 @@ function binarySearch(list, attribute, target) {
 }
 
 //Shows relevant element data
-function showElementData(that) {
-	var index = binarySearch(elementsByAtomicNumber, function(a){return a.atomic_number}, that.querySelector(".AtomicNumber").innerHTML)
+function showElementData() {
+	var index = binarySearch(elementsByAtomicNumber, function(a){return a.atomic_number}, this.querySelector(".AtomicNumber").innerHTML)
 
 	var element = elementsByAtomicNumber[index]
 
@@ -629,7 +629,7 @@ function showElementData(that) {
 	Symbol: ${element.symbol}<br>
 	Name: ${element.name}<br>
 	${element.phase.caps()}<br>
-	${categoryText[element.category].caps()}<br><br>
+	${element.category.caps()}<br><br>
 	${element.appearance ? element.appearance.caps() + ".<br><br>" : ""}
 	${Year ? "Discovery: " + Year + "<br>": ""}
 	Shells: ${element.shells.toString().replace(/,/g, ', ')}<br>
@@ -675,28 +675,36 @@ function showElementData(that) {
 
 }
 
-function graph(attributeX, attributeY) {
-	//graph("atomic_number", "density")
-	//graph("group", "covalent_radius")
+//Graph the elements by the highlight type vs layout type
+function graph() {
+	var attributeX = layoutType, attributeY = highlightType
 	hidePlaceholders()
 	max = {x: -Infinity, y: -Infinity}
 	min = {x: Infinity, y: Infinity}
 	
 	for (var i = 0; i < elements.length; i++) {
-		if (elements[i][attributeX] || elements[i][attributeX] === 0) {
-			if (elements[i][attributeX] > max.x) {
-				max.x = elements[i][attributeX]
+		var valueX = elements[i][attributeX], valueY = elements[i][attributeY]
+		
+		if (valueX || valueX === 0) {
+			if (isNaN(valueX)) {
+				valueX = valueX.toNumber()
 			}
-			if (elements[i][attributeX] < min.x) {
-				min.x = elements[i][attributeX]
+			if (valueX > max.x) {
+				max.x = valueX
+			}
+			if (valueX < min.x) {
+				min.x = valueX
 			}
 		}
-		if (elements[i][attributeY] || elements[i][attributeY] === 0) {
-			if (elements[i][attributeY] > max.y) {
-				max.y = elements[i][attributeY]
+		if (valueY || valueY === 0) {
+			if (isNaN(valueY)) {
+				valueX = valueY.toNumber()
+			}
+			if (valueY > max.y) {
+				max.y = valueY
 			} 
-			if (elements[i][attributeY] < min.y) {
-				min.y = elements[i][attributeY]
+			if (valueY < min.y) {
+				min.y = valueY
 			}
 		}
 	}
@@ -706,14 +714,15 @@ function graph(attributeX, attributeY) {
 	for (var i = 0; i < elements.length; i++) {
 		var element = document.getElementById(elements[i].name)
 
-		if ((elements[i][attributeX] || elements[i][attributeX] === 0) && (elements[i][attributeY] || elements[i][attributeY] === 0)) {
-			var v1 = (elements[i][attributeX]-min.x)/(max.x-min.x)
-			var v2 = (elements[i][attributeY]-min.y)/(max.y-min.y)
-			element.style.left = (v1*18+0.5)*5 + "%"
-			element.style.top = ((1 - v2))*(100 - 300/12) + 100/12 + "%"
+		if (elements[i][attributeX] || elements[i][attributeX] === 0) {
+			element.style.left = ((elements[i][attributeX].toNumber() - min.x)/(max.x-min.x)*18+0.5)*5 + "%"
 		} else {
 			element.style.left = "-6%"
-			element.style.top = 0
+		}
+		if (elements[i][attributeY] || elements[i][attributeY] === 0) { 
+			element.style.top = ((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12 + "%"
+		} else {
+			element.style.top = "108%"
 		}
 
 	}
@@ -731,4 +740,18 @@ String.prototype.reverse = function() {
 		return this.slice(1).reverse() + this[0]
 	}
 	return ""
+}
+
+//Turns a string into a unique number, giving it a numerical value to interpolate between
+String.prototype.toNumber = function() {
+	var n = 0
+	for (var i = 0; i < this.length; i++) {
+		n += 1/Math.pow(27, i + 1)*(this.charCodeAt(i) - 96)
+	}
+	return n
+}
+
+//Allows a valid toNumber call on both strings and numbers
+Number.prototype.toNumber = function() {
+	return this
 }

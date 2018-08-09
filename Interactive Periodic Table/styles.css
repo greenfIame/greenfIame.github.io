@@ -64,7 +64,7 @@ body {
 }
 .Datapoints {
 	position: absolute;
-	bottom: 20%;
+	bottom: 30%;
 	left: 6%;
 	opacity: 0;
 	transition: 1s;
@@ -194,22 +194,25 @@ body {
   border-radius: 3px;
   overflow: hidden;
   background-color: #fafafa;
-	transition: 0.5s;
+	transition: 0.2s;
 	cursor: pointer;
 }
 .sidebarButton:hover {
 	background-color: #ddd;
 }
 .sidebarButton:active {
-	transition: 0.2s;
 	background-color: #ccc;
 }
 
-#reverseCheckbox {
+input[type="checkbox"] {
 	position: relative;
-	left: 10em;
+	left: 11em;
 	top: -2em;
 	cursor: inherit;
+}
+.hidden {
+	height: 0;
+	border: 0;
 }
 
 .dropdown {
@@ -219,7 +222,7 @@ body {
   border-radius: 3px;
   overflow: hidden;
   background-color: #fafafa;
-	transition: 0.5s;
+	transition: 0.2s;
 	cursor: default;
 }
 .dropdownButton {
@@ -231,7 +234,7 @@ body {
 	background-color: #fafafa;
 	padding: 4px;
 	transition-property: background-color;
-	transition: 0.5s;
+	transition: 0.2s;
 	cursor: pointer;
 
 	/*Preventing user from selecting text*/

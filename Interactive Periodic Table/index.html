@@ -28,31 +28,39 @@
 				<p>Re-scrape data</p>
 			</div>
 
-			<div id="reversed" class="sidebarButton" onclick="if (!this.className.match('inactive')) {checkReverse(this)}">
-				<p>Reverse order</p><input type="checkbox" id="reverseCheckbox"></input>
+			<div id="reverseButton" class="sidebarButton" onclick="checkbox.bind(this)(); graphButton.checkedlayout()">
+				<p>Reverse order</p><input type="checkbox" />
+			</div>
+			<div id="reverseYAxisButton" class="sidebarButton hidden" onclick="checkbox.bind(this)(); graphButton.checkedlayout()">
+				<p>Reverse Y axis</p><input type="checkbox" />
+			</div>
+			
+			<div id="graphButton" class="sidebarButton" onclick="checkbox.bind(this)(); (this.checked ? graph : layout)()"><!-- graph(layoutType, highlightType) -->
+				<p>Graph H vs L</p><input type="checkbox" />
 			</div>
 
-			<div id="layoutSelect" class="dropdown" onmouseenter="showContent(this)" onmouseleave="hideContent(this)">
+			<div id="layoutSelect" class="dropdown" onmouseenter="showContent.bind(this)()" onmouseleave="hideContent.bind(this)()">
 				<div id="layoutSelectButton" class="dropdownButton">
 					Layout:
 				</div>
 				<div id="layoutSelectContent" class="content">
-					<div class='selectOption active' id='layout_periodic' onclick='layoutChange(this)'>Periodic Table</div>
+					<div class='selectOption active' id='layout_periodic' onclick='layoutChange.bind(this)(); layout()'>Periodic Table</div>
 				</div>
 			</div>
 
-			<div id="highlightSelect" class="dropdown" onmouseenter="showContent(this)" onmouseleave="hideContent(this)">
+			<div id="highlightSelect" class="dropdown" onmouseenter="showContent.bind(this)()" onmouseleave="hideContent.bind(this)()">
 				<div id="highlightSelectButton" class="dropdownButton">
 					Highlight:
 				</div>
 				<div id="highlightSelectContent" class="content">
-					<div class='selectOption active' id='highlight_none' onclick='highlight(this)'>None</div>
+					<div class='selectOption active' id='highlight_none' onclick='highlightChange.bind(this)(); highlight()'>None</div>
 				</div>
 			</div>
 
 		</div>
 
 		<div id="elements">
+			<div id="textWidth" style="font-size: 0.4em; position: absolute; height: auto; width: auto; white-space: nowrap; visibility: hidden;"></div>
       <svg id="loading" width="15%" viewBox="0 0 100 100">
         <circle cx="50%" cy="20%" r="10" transform="rotate(0 50 50)" style="opacity: 1;"/>
         <circle cx="50%" cy="20%" r="9" transform="rotate(315 50 50)" style="opacity: 0.9;"/>
@@ -75,11 +83,6 @@
 		</div>
 
     <div id="Search"></div>
-    
-		<div id="help">
-			<div style="font-size: 40px; position: absolute; top: -34px; left: -10px;">click</div>
-			⤷
-		</div>
 
   </body>
 </html>
