@@ -21,75 +21,96 @@ var player = {
       v.x += Math.cos(this.heading + Math.PI/2)*this.ms
       v.y += Math.sin(this.heading + Math.PI/2)*this.ms
     }
-    if (Math.floor(this.pos.x + v.x) == Math.floor(this.pos.x) || !map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l) {
+
+    if (
+      Math.floor(this.pos.x + v.x) == Math.floor(this.pos.x) ||
+      !map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l ||
+      map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l.state <= 0
+    ) {
       this.pos.x += v.x
     } else {
-      var portal = map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l
-      if (typeof(portal) == "object" && (portal.right === null || portal.right === (v.y > 0))) {
+      var wall = map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l
+      if (typeof(wall) == "object" && (wall.right === null || wall.right === (v.y > 0))) {
         var relativePos = {x: (Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)) - (this.pos.x + v.x), y: this.pos.y - Math.floor(this.pos.y)}
-        switch(portal.rotate) {
+        switch(wall.rotate) {
           case "left":
-            this.pos.x = portal.x + relativePos.y
-            this.pos.y = portal.y + relativePos.x
+            this.pos.x = wall.x + relativePos.y
+            this.pos.y = wall.y + relativePos.x
             this.heading -= Math.PI/2
             break
           case "right":
-            this.pos.x = portal.x + 1 - relativePos.y
-            this.pos.y = portal.y - relativePos.x
+            this.pos.x = wall.x + 1 - relativePos.y
+            this.pos.y = wall.y - relativePos.x
             this.heading += Math.PI/2
             break
           case "reverse":
-            this.pos.x = portal.x + relativePos.x
-            this.pos.y = portal.y + 1 - relativePos.y
+            this.pos.x = wall.x + relativePos.x
+            this.pos.y = wall.y + 1 - relativePos.y
             this.heading += Math.PI
             break
           default:
-            this.pos.x = portal.x - relativePos.x
-            this.pos.y = portal.y + relativePos.y
+            this.pos.x = wall.x - relativePos.x
+            this.pos.y = wall.y + relativePos.y
         }
+      } else if (wall.state) {
+        wall.state -= 0.01
       }
     }
-    if (Math.floor(this.pos.y + v.y) == Math.floor(this.pos.y) || !map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u) {
+    if (
+      Math.floor(this.pos.y + v.y) == Math.floor(this.pos.y) ||
+      !map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u ||
+      map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u.state <= 0
+    ) {
       this.pos.y += v.y
     } else {
-      var portal = map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u
-      if (typeof(portal) == "object" && (portal.down === null || portal.down === (v.y > 0))) {
+      var wall = map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u
+      if (typeof(wall) == "object" && (wall.down === null || wall.down === (v.y > 0))) {
         var relativePos = {x: this.pos.x - Math.floor(this.pos.x), y: (Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)) - (this.pos.y + v.y)}
-        switch(portal.rotate) {
+        switch(wall.rotate) {
           case "left":
-            this.pos.x = portal.x - relativePos.y
-            this.pos.y = portal.y + 1 - relativePos.x
+            this.pos.x = wall.x - relativePos.y
+            this.pos.y = wall.y + 1 - relativePos.x
             this.heading -= Math.PI/2
             break
           case "right":
-            this.pos.x = portal.x + relativePos.y
-            this.pos.y = portal.y + relativePos.x
+            this.pos.x = wall.x + relativePos.y
+            this.pos.y = wall.y + relativePos.x
             this.heading += Math.PI/2
             break
           case "reverse":
-            this.pos.x = portal.x + 1 - relativePos.x
-            this.pos.y = portal.y + relativePos.y
+            this.pos.x = wall.x + 1 - relativePos.x
+            this.pos.y = wall.y + relativePos.y
             this.heading += Math.PI
             break
           default:
-            this.pos.x = portal.x + relativePos.x
-            this.pos.y = portal.y - relativePos.y
+            this.pos.x = wall.x + relativePos.x
+            this.pos.y = wall.y - relativePos.y
         }
+      } else if (wall.state) {
+        wall.state -= 0.01
       }
     }
   },
 
   render3d: function() {
-    var a, ray, d
+    var a, ray, d, b
     ctx.fillStyle = "#a22"
 
     for (var i = 0; i < cnv.width; i++) {
       a = this.heading + (Math.PI/2 * (i / (cnv.width - 1)) - Math.PI/4)
       ray = castRay(a, this.pos.x, this.pos.y)
       d = ray.d * Math.cos(Math.PI/2 * (i / (cnv.width - 1)) - Math.PI/4)
-      fill(50 + 150/((16 + d*d)/16), 20, 20)
+      b = ((16 + d*d)/16)
+      if (ray.t == "wall") {
+        fill(50 + 150/b, 20, 20)
+        mapctx.fillStyle = `#000`
+      } else {
+        fill(20, 150 + 50/b, 150 + 50/b)
+        mapctx.fillStyle = `#00f`
+      }
       ctx.fillRect(i, cnv.height/2 - (cnv.height * 0.5/d)/2, 1, cnv.height * 0.5/d)
-      minictx.fillRect(Math.round(ray.x*2), Math.round(ray.y*2), 1, 1)
+      //minictx.fillRect(Math.round(ray.x*2), Math.round(ray.y*2), 1, 1)
+      mapctx.fillRect(Math.floor(player.pos.x + Math.cos(a)*ray.d)*5, Math.floor(player.pos.y + Math.sin(a)*ray.d)*5, 3, 3)
     }
   }
 }
@@ -147,19 +168,26 @@ function castRay(a, x_, y_, ignore, render_) {
       if (c(x, genY, l)) {
         if (!ignore) {
           var portal = map[x][Math.floor(genY)].l
-          if (typeof(portal) == "object" && (portal.right === null || portal.right === right)) {
-            var relativePos = (genY - Math.floor(genY))
-            if (!portal.rotate) {
-              dist = castRay(a, portal.x, portal.y + relativePos, dist, render_).d
-            } else if (portal.rotate == "reverse") {
-              dist = castRay(a + Math.PI, portal.x, portal.y + 1 - relativePos, dist, render_).d
-            } else if (portal.rotate == "right") {
-              dist = castRay(a + Math.PI/2, portal.x + 1 - relativePos, portal.y, dist, render_).d
-            } else if (portal.rotate == "left") {
-              dist = castRay(a - Math.PI/2, portal.x + relativePos, portal.y, dist, render_).d
+          if (typeof(portal) == "object" && portal.state) {
+            if (true) {
+              return {x: x, y: genY, d: dist, t: "door"}
             }
+          } else if (typeof(portal) == "object" && (portal.right === null || portal.right === right)) {
+            var relativePos = (genY - Math.floor(genY))
+            var ray
+            if (!portal.rotate) {
+              ray = castRay(a, portal.x, portal.y + relativePos, dist, render_)
+            } else if (portal.rotate == "reverse") {
+              ray = castRay(a + Math.PI, portal.x, portal.y + 1 - relativePos, dist, render_)
+            } else if (portal.rotate == "right") {
+              ray = castRay(a + Math.PI/2, portal.x + 1 - relativePos, portal.y, dist, render_)
+            } else if (portal.rotate == "left") {
+              ray = castRay(a - Math.PI/2, portal.x + relativePos, portal.y, dist, render_)
+            }
+            return ray//{x: x, y: genY, d: ray.d, t: ray.t}
+          } else {
+            return {x: x, y: genY, d: dist, t: "wall"}
           }
-          return {x: x, y: genY, d: dist}
         } else {
           ignore = false
         }
@@ -182,19 +210,27 @@ function castRay(a, x_, y_, ignore, render_) {
       if (c(genX, y, u)) {
         if (!ignore) {
           var portal = map[Math.floor(genX)][y].u
-          if (typeof(portal) == "object" && (portal.down === null || portal.down === down)) {
-            var relativePos = (genX - Math.floor(genX))
-            if (!portal.rotate) {
-              dist = castRay(a, portal.x + relativePos, portal.y, dist, render_).d
-            } else if (portal.rotate == "reverse") {
-              dist = castRay(a + Math.PI, portal.x + 1 - relativePos, portal.y, dist, render_).d
-            } else if (portal.rotate == "right") {
-              dist = castRay(a + Math.PI/2, portal.x, portal.y + relativePos, dist, render_).d
-            } else if (portal.rotate == "left") {
-              dist = castRay(a - Math.PI/2, portal.x, portal.y + 1 - relativePos, dist, render_).d
+          var type = portal.state ? "door" : "wall"
+          if (typeof(portal) == "object" && portal.state) {
+            if (true) {
+              return {x: x, y: genY, d: dist, t: "door"}
             }
+          } else if (typeof(portal) == "object" && (portal.down === null || portal.down === down)) {
+            var relativePos = (genX - Math.floor(genX))
+            var ray
+            if (!portal.rotate) {
+              ray = castRay(a, portal.x + relativePos, portal.y, dist, render_)
+            } else if (portal.rotate == "reverse") {
+              ray = castRay(a + Math.PI, portal.x + 1 - relativePos, portal.y, dist, render_)
+            } else if (portal.rotate == "right") {
+              ray = castRay(a + Math.PI/2, portal.x, portal.y + relativePos, dist, render_)
+            } else if (portal.rotate == "left") {
+              ray = castRay(a - Math.PI/2, portal.x, portal.y + 1 - relativePos, dist, render_)
+            }
+            return ray
+          } else {
+            return {x: genX, y: y, d: dist, t: "wall"}
           }
-          return {x: genX, y: y, d: dist}
         } else {
           ignore = false
         }

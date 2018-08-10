@@ -227,7 +227,7 @@ function createButtons() {
 	for (var i = 0; i < keys.length; i++) {
 
 		//You cannot sort or highlight by appearance or shells
-		if (keys[i] == "appearance" || keys[i] == "shells") {
+		if (keys[i] == "appearance" || keys[i] == "shells" || keys[i] == "crystal_structure") {
 			continue
 		}
 
@@ -628,10 +628,10 @@ function showElementData() {
 	document.getElementById("dataText").innerHTML = `
 	Symbol: ${element.symbol}<br>
 	Name: ${element.name}<br>
-	${element.phase.caps()}<br>
-	${element.category.caps()}<br><br>
-	${element.appearance ? element.appearance.caps() + ".<br><br>" : ""}
-	${Year ? "Discovery: " + Year + "<br>": ""}
+	Phase: ${element.phase.caps()}<br>
+	Category: ${element.category.caps()}<br><br>
+	Appearance:<br>${element.appearance ? element.appearance.caps() + ".<br><br>" : ""}
+	Year of discovery: ${Year ? "Discovery: " + Year + "<br>": ""}
 	Shells: ${element.shells.toString().replace(/,/g, ', ')}<br>
 	Crystal structure: ${element.crystal_structure}<br><br>
 	${element.melting_point ? "Melting point: " + element.melting_point + " K (" + (element.melting_point - 273.15).toFixed(2) + "°C)<br>" + (element.boiling_point ? "" : "<br>") : ""}
@@ -642,7 +642,7 @@ function showElementData() {
 	${element.covalent_radius ? "Covalent radius: " + element.covalent_radius + " pm<br>" : ""}
 	${element.electrical_resisivity ? "Electrical resisivity: " + element.electrical_resisivity + " nΩ·m<br>" : ""}
 	First ionization: ${element.first_ionization} kJ/mol<br>
-	<span style="position: absolute; right: 0.4em; top: 0.4em; font: bold 1.5em arial;">${element.atomic_number}</span><br>
+	<span style="position: absolute; right: 0.4em; top: 0.4em; font: bold 1.5em arial;">${element.atomic_number}</span>
 	`
 
 	var h = document.getElementById("dataText").scrollHeight/elementsDiv.scrollHeight*100
@@ -698,7 +698,7 @@ function graph() {
 		}
 		if (valueY || valueY === 0) {
 			if (isNaN(valueY)) {
-				valueX = valueY.toNumber()
+				valueY = valueY.toNumber()
 			}
 			if (valueY > max.y) {
 				max.y = valueY
@@ -710,6 +710,7 @@ function graph() {
 	}
 	
 	//5% < x < 95%
+	console.log(max, min)
 	
 	for (var i = 0; i < elements.length; i++) {
 		var element = document.getElementById(elements[i].name)
@@ -721,6 +722,7 @@ function graph() {
 		}
 		if (elements[i][attributeY] || elements[i][attributeY] === 0) { 
 			element.style.top = ((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12 + "%"
+			console.log(((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12)
 		} else {
 			element.style.top = "108%"
 		}

@@ -21,6 +21,11 @@ function start() {
 	}
 
 	createMap()
+	for (var i = 0; i < map.length; i++) {
+		for (var j = 0; j < map[i].length; j++) {
+
+		}
+	}
 	update()
 	render()
 }
@@ -94,13 +99,12 @@ function updateMinimap() {
 	minimap.style.left = `calc(50% - ${pos.zoom*pos.x} * 100%)`
 	minimap.style.top = `calc(50% - ${pos.zoom*pos.y} * 100%)`
 	minimapWrapper.style.transform = `rotate(${-player.heading - Math.PI/2}rad)`
-	//minimapContainer.clientHeight
 }
 
 function render() {
 	render3d()
-	render2d()
-	updateMinimap()
+	//render2d()
+	//updateMinimap()
 	if (!paused) {
 		requestAnimationFrame(render)
 	}
@@ -165,13 +169,12 @@ function createMap() {
 			portals[keys[i].toUpperCase()] = portals[keys[i].toUpperCase()] ? portals[keys[i].toUpperCase()] : {}
 			var r = portals[keys[i].toLowerCase()].rotate
 			portals[keys[i].toUpperCase()].rotate = !r ? false : (r == "reverse" ? "reverse" : (r == "left" ? "right" : "left"))
-			var s = portals[keys[i].toUpperCase()][i % 2 == 1 ? "down" : "right"]
-			portals[keys[i].toUpperCase()][i % 2 == 1 ? "down" : "right"] = s ? s : null
+			var s = portals[keys[i].toLowerCase()][i % 2 == 1 ? "down" : "right"]
+			portals[keys[i].toUpperCase()][portals[keys[i].toLowerCase()].right ? "right" : "down"] = null
 			portals[keys[i].toUpperCase()].x = temp[keys[i].toLowerCase()].x
 			portals[keys[i].toUpperCase()].y = temp[keys[i].toLowerCase()].y
 		}
 	}
-
 	map = Array.apply(null, Array(mapData[0].length/2)).map(i => [])
 
 	for (var i = 0; i < mapData[0].length; i += 2) {
@@ -185,7 +188,10 @@ function createMap() {
 				player.pos.x = i/2 + 0.5
 				player.pos.y = j + 0.5
 			}
-			map[i/2][j] = {l: mapData[j][i] == "|" || portals[mapData[j][i]], u: mapData[j][i + 1] == "¯" || portals[mapData[j][i + 1]]}
+			map[i/2][j] = {
+				l: mapData[j][i] == "|" || {D: {state: 1}}[mapData[j][i]] || portals[mapData[j][i]],
+				u: mapData[j][i + 1] == "¯" || {D: {state: 1}}[mapData[j][i + 1]] || portals[mapData[j][i + 1]],
+			}
 		}
 	}
 
