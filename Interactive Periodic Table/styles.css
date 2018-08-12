@@ -304,6 +304,10 @@ p {
 	animation-iteration-count: infinite;
 }
 
+svg {
+	pointer-events: none;
+}
+
 @keyframes loading {
     0%   		{transform: rotate(0deg);}
 
