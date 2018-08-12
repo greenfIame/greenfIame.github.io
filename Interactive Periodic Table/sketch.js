@@ -2,7 +2,6 @@
 var layoutType = "periodic"
 var highlightType = "none"
 var sideBar = false
-var elementsDiv
 var searchTimeout = {clear: null, fade: null}
 
 var elements = []
@@ -10,10 +9,7 @@ var elementsLength
 
 var elementsByAtomicNumber
 
-//In order to recreate this in svg I need to create a manual animation function like on thingsmadethinkable
-
-//Checks for pre-exiting local storage items and either loads them or creates space
-//window.localStorage.removeItem('IPT')
+//Checks for pre-exiting local storage items and either loads them or creates space (persistent storage)
 if (!window.localStorage.IPT) {
 	window.localStorage.IPT = JSON.stringify(elements)
 } else {
@@ -23,7 +19,6 @@ if (!window.localStorage.IPT) {
 //Function called once the body of the page loads
 function start() {
 
-	elementsDiv = document.getElementById("elements")
 	window.onresize = windowResize
 	windowResize()
 
@@ -37,7 +32,7 @@ function start() {
 
 		loadedElements()
 	}
-	
+
 	if (layoutType == "periodic") {
 		reverseButton.className = graphButton.className = "sidebarButton inactive"
 	}
@@ -57,12 +52,16 @@ function scrapeElements() {
 	for (var i = 0; i < domElements.length; i++) {
 		domElements[i].remove()
 	}
-	document.getElementById("elements")
+	reverseButton.className = graphButton.className = "sidebarButton inactive"
+	layout_periodic.className = "selectOption active"
+	highlight_none.className = "selectOption active"
+	layoutType = "periodic"
+	highlightType = "none"
 
 	//First request gets a list of all the elements
 	request("List of chemical elements", function(that){
 		var site = JSON.parse(that.response).parse.text["*"]
-		
+
 		var parser = new DOMParser();
 		var doc = parser.parseFromString(site, "text/html");
 		var query = doc.evaluate("//table[contains(translate(., 'ELMNT', 'elmnt'), 'element')]/tbody/tr/td[position() = 3]/a/@href", doc, null, XPathResult.ANY_TYPE, null)
@@ -102,7 +101,7 @@ function XPath(xpath, parent) {
 	return (parent || document).evaluate(xpath, parent || document, null, XPathResult.ANY_TYPE, null).iterateNext() || {innerHTML: "", innerText: ""}
 }
 
-//Generates objects from wikipedia page html 
+//Generates User Defined objects from wikipedia page html using xpath and regex
 function addElement(that){
 	var parser = new DOMParser();
 	var doc = parser.parseFromString(JSON.parse(that.response).parse.text["*"], "text/html");
@@ -170,8 +169,6 @@ function addElement(that){
 		element.group = null
 	}
 
-	//console.log(element.name)
-
 	elements.push(element)
 	createDOMelement(element)
 
@@ -203,21 +200,17 @@ function createDOMelement(element) {
 	DOMelement.style.top = "40%"
 	elementsDiv.appendChild(DOMelement)
 
-	if (layoutType == "periodic") {
-		var x = element.group
-		var y = element.period
-		if (56 < element.atomic_number && element.atomic_number < 72) {
-			x = 2 + element.atomic_number - 56
-			y += 3
-		} else if (88 < element.atomic_number && element.atomic_number < 104) {
-			x = 2 + element.atomic_number - 88
-			y += 3
-		}
-		DOMelement.style.left = x*5 + "%"
-		DOMelement.style.top = y*(100/12) + "%"
-	} else {
-		layout()
+	var x = element.group
+	var y = element.period
+	if (56 < element.atomic_number && element.atomic_number < 72) {
+		x = 2 + element.atomic_number - 56
+		y += 3
+	} else if (88 < element.atomic_number && element.atomic_number < 104) {
+		x = 2 + element.atomic_number - 88
+		y += 3
 	}
+	DOMelement.style.left = x*5 + "%"
+	DOMelement.style.top = y*(100/12) + "%"
 }
 
 //Establishing all of the options for layout and highlight
@@ -231,11 +224,7 @@ function createButtons() {
 			continue
 		}
 
-		var text = keys[i].split("_")
-		for (var j = 0; j < text.length; j++) {
-			text[j] = text[j].caps()
-		}
-		text = text.join(" ")
+		var text = keys[i].capsAll()
 
 		//Creating the buttons
 		layoutSelectContent.innerHTML += `<div class='selectOption' id='layout_${keys[i]}' onclick="layoutChange.bind(this)(); (graphButton.checked ? graph : layout)()">${text}</div>`
@@ -370,7 +359,7 @@ function comparison(a, b){
 	return sum
 }
 
-//The insertion sort
+//The insertion sort (Sort Routine)
 function insertionSort(list, comparison) {
 	for (var i = 0; i < list.length; i++) {
 		var j = i
@@ -500,6 +489,17 @@ function resize() {
 	document.getElementById("Title").style.width = `calc(100vw - ${rhs}px)`
 	document.getElementById("sidebar").style.width = `${rhs}px`
 	document.getElementById("sidebarHandle").style.right = `${rhs}px`
+	
+	if (graphButton.checked) {
+		yAxis.style.left = `calc(-${(yAxis.clientWidth)/2}px + 2.5%)`
+		yAxisLine1.y2.baseVal.valueAsString = `${elementsDiv.clientHeight/2 - (yAxis.clientWidth + 1)/2}px`
+		yAxisLine2.y1.baseVal.valueAsString = `${elementsDiv.clientHeight/2 + (yAxis.clientWidth + 1)/2}px`
+	
+		textWidth.style.fontSize = "1em"
+		textWidth.innerHTML = xAxis.innerHTML
+		xAxisLine1.x2.baseVal.valueAsString = `${elementsDiv.clientWidth/2 - (textWidth.clientWidth + 1)/2}px`
+		xAxisLine2.x1.baseVal.valueAsString = `${elementsDiv.clientWidth/2 + (textWidth.clientWidth + 1)/2}px`
+	}
 }
 
 //Show the contents of a dropdown div
@@ -514,26 +514,52 @@ function hideContent() {
 
 //Change the layout of the elements
 function layoutChange() {
-	document.getElementById("layout_" + layoutType).className = document.getElementById("layout_" + layoutType).className.replace(" active", "")
-	this.className += " active"
+	document.getElementById("layout_" + layoutType).className = "selectOption"
+	this.className = "selectOption active"
 	layoutType = this.id.slice(7)
-	if (layoutType == "periodic") {
+	if (layoutType == "periodic" || highlightType == "none") {
 		reverseButton.className = graphButton.className = "sidebarButton inactive"
+		reverseButton.querySelector("p").innerHTML = "Reverse order"
+		reverseYAxisButton.className = 'sidebarButton hidden'
+		axies.style.opacity = "0"
 	} else {
 		reverseButton.className = graphButton.className = "sidebarButton"
+		if (graphButton.checked) {
+			reverseButton.querySelector("p").innerHTML = "Reverse X axis" 
+			reverseYAxisButton.className = 'sidebarButton'
+		}
 	}
 }
 
 //Change the highlight of the elements
 function highlightChange() {
-	document.getElementById("highlight_" + highlightType).className = document.getElementById("highlight_" + highlightType).className.replace(" active", "")
-	this.className += " active"
+	document.getElementById("highlight_" + highlightType).className = "selectOption"
+	this.className = "selectOption active"
 	highlightType = this.id.slice(10)
+	if (layoutType == "periodic") {
+		reverseButton.className = graphButton.className = "sidebarButton inactive"
+		reverseButton.querySelector("p").innerHTML = "Reverse order"
+		reverseYAxisButton.className = 'sidebarButton hidden'
+		axies.style.opacity = "0"
+		if (highlightType == "none" && graphButton.checked) {
+			layout()
+		}
+	} else {
+		reverseButton.className = graphButton.className = "sidebarButton"
+		if (graphButton.checked) {
+			reverseButton.querySelector("p").innerHTML = "Reverse X axis" 
+			reverseYAxisButton.className = 'sidebarButton'
+		}
+	}
 }
 
 //Handle a keypress and highlight search results
 function keyPress(event) {
 	hideElementData()
+
+	if (event.metaKey || event.ctrlKey) {
+		return 0
+	}
 
 	clearTimeout(searchTimeout.fade)
 	clearTimeout(searchTimeout.clear)
@@ -625,6 +651,7 @@ function showElementData() {
 
 	var Year = `${Math.abs(element.discovery)} ${element.discovery > 0 ? "CE" : "BCE"}`
 
+	//String manipulation using backticks
 	document.getElementById("dataText").innerHTML = `
 	Symbol: ${element.symbol}<br>
 	Name: ${element.name}<br>
@@ -677,14 +704,27 @@ function showElementData() {
 
 //Graph the elements by the highlight type vs layout type
 function graph() {
+	axies.style.opacity = "1"
 	var attributeX = layoutType, attributeY = highlightType
 	hidePlaceholders()
 	max = {x: -Infinity, y: -Infinity}
 	min = {x: Infinity, y: Infinity}
 	
+	xAxis.innerHTML = layoutType.capsAll()
+	yAxis.innerHTML = highlightType.capsAll()
+	yAxis.style.left = `calc(-${(yAxis.clientWidth)/2}px + 2.5%)`
+	yAxisLine1.y2.baseVal.valueAsString = `${elementsDiv.clientHeight/2 - (yAxis.clientWidth + 1)/2}px`
+	yAxisLine2.y1.baseVal.valueAsString = `${elementsDiv.clientHeight/2 + (yAxis.clientWidth + 1)/2}px`
+	
+	textWidth.style.fontSize = "1em"
+	textWidth.innerHTML = xAxis.innerHTML
+	xAxisLine1.x2.baseVal.valueAsString = `${elementsDiv.clientWidth/2 - (textWidth.clientWidth + 1)/2}px`
+	xAxisLine2.x1.baseVal.valueAsString = `${elementsDiv.clientWidth/2 + (textWidth.clientWidth + 1)/2}px`
+	
+
 	for (var i = 0; i < elements.length; i++) {
 		var valueX = elements[i][attributeX], valueY = elements[i][attributeY]
-		
+
 		if (valueX || valueX === 0) {
 			if (isNaN(valueX)) {
 				valueX = valueX.toNumber()
@@ -702,38 +742,59 @@ function graph() {
 			}
 			if (valueY > max.y) {
 				max.y = valueY
-			} 
+			}
 			if (valueY < min.y) {
 				min.y = valueY
 			}
 		}
 	}
-	
+
 	//5% < x < 95%
-	console.log(max, min)
-	
+
 	for (var i = 0; i < elements.length; i++) {
 		var element = document.getElementById(elements[i].name)
 
 		if (elements[i][attributeX] || elements[i][attributeX] === 0) {
-			element.style.left = ((elements[i][attributeX].toNumber() - min.x)/(max.x-min.x)*18+0.5)*5 + "%"
+			if (reverseButton.checked) {
+				element.style.left = ((1 - (elements[i][attributeX].toNumber() - min.x)/(max.x-min.x))*17+1)*5 + "%"
+			} else {
+				element.style.left = ((elements[i][attributeX].toNumber() - min.x)/(max.x-min.x)*17+1)*5 + "%"
+			}
 		} else {
 			element.style.left = "-6%"
 		}
-		if (elements[i][attributeY] || elements[i][attributeY] === 0) { 
-			element.style.top = ((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12 + "%"
-			console.log(((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12)
+		if (elements[i][attributeY] || elements[i][attributeY] === 0) {
+			if (reverseYAxisButton.checked) {
+				element.style.top = ((elements[i][attributeY].toNumber() - min.y)/(max.y-min.y))*(100 - 300/12) + 100/12 + "%"
+			} else {
+				element.style.top = ((1 - (elements[i][attributeY].toNumber() - min.y)/(max.y-min.y)))*(100 - 300/12) + 100/12 + "%"
+			}
 		} else {
 			element.style.top = "108%"
 		}
 
 	}
-	
+
+}
+
+//Change whether the elements are to be graphed
+function graphingChange() {
+	axies.style.opacity = this.checked ? "1" : "0";
+	(this.checked ? graph : layout)()
+	reverseYAxisButton.className = 'sidebarButton ' + (!this.checked && 'hidden')
+	reverseButton.querySelector("p").innerHTML = this.checked ? "Reverse X axis" : "Reverse order"
 }
 
 //Capitalises a given string
 String.prototype.caps = function() {
 	return this ? this[0].toUpperCase() + this.slice(1) : this
+}
+
+//Capitalises all words in a string
+String.prototype.capsAll = function() {
+	var temp = []
+	this.split("_").forEach((a, i) => temp[i] = a.caps())
+	return temp.join(" ")
 }
 
 //Reverses a given string

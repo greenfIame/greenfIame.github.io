@@ -30,7 +30,6 @@ body {
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.1);
 	text-align: center;
-	/*outline 0.2s*/
 	-webkit-transition: width 2s, height 2s, left 2s, right 2s, top 2s, bottom 2s, background-color 2s, opacity 2s;
 	outline-offset: -4px;
 	border: 0.5px solid rgba(0,0,0,0.05);
@@ -73,7 +72,7 @@ body {
 	font-size: 0.4em;
 }
 
-#elements {
+#elementsDiv {
 	font-family: "Arial", Arial, sans-serif;
 	position: absolute;
 	transition-property: width, height;
@@ -82,13 +81,19 @@ body {
 	font-size: 40px;
 }
 
+#axies {
+	opacity: 0;
+	transition: 0.5s;
+	transition-property: opacity;
+}
+
 #Title {
 	background-color: rgb(230, 230, 230);
 	height: 30px;
 	width: 100vw;
 	text-align: center;
 	font-size: 20px;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Noto Serif', 'Times New Roman', serif;
 }
 
 #Search {
@@ -194,7 +199,7 @@ body {
   border-radius: 3px;
   overflow: hidden;
   background-color: #fafafa;
-	transition: 0.2s;
+	-webkit-transition: height 1s, background-color 0.2s;
 	cursor: pointer;
 }
 .sidebarButton:hover {
@@ -203,10 +208,13 @@ body {
 .sidebarButton:active {
 	background-color: #ccc;
 }
+.sidebarButton > p {
+	padding-left: 1em;
+}
 
 input[type="checkbox"] {
 	position: relative;
-	left: 11em;
+	left: -0em;
 	top: -2em;
 	cursor: inherit;
 }

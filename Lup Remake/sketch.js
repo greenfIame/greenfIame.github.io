@@ -21,11 +21,7 @@ function start() {
 	}
 
 	createMap()
-	for (var i = 0; i < map.length; i++) {
-		for (var j = 0; j < map[i].length; j++) {
-
-		}
-	}
+	render2d()
 	update()
 	render()
 }
@@ -136,10 +132,10 @@ function render2d() {
 	mapctx.fill()
 
 	mapctx.fillStyle = "#f00"
-	mapctx.fillRect(player.pos.x * m - 1, player.pos.y * m - 1, 3, 3)
+	//mapctx.fillRect(player.pos.x * m - 1, player.pos.y * m - 1, 3, 3)
 	mapctx.strokeStyle = "#000"
 
-	var r = castRay(player.heading, player.pos.x, player.pos.y, false, m)
+	//var r = castRay(player.heading, player.pos.x, player.pos.y, false, m)
 
 }
 

@@ -28,15 +28,15 @@
 				<p>Re-scrape data</p>
 			</div>
 
-			<div id="reverseButton" class="sidebarButton" onclick="checkbox.bind(this)(); graphButton.checkedlayout()">
+			<div id="reverseButton" class="sidebarButton" onclick="checkbox.bind(this)(); (graphButton.checked ? graph : layout)()">
 				<p>Reverse order</p><input type="checkbox" />
 			</div>
-			<div id="reverseYAxisButton" class="sidebarButton hidden" onclick="checkbox.bind(this)(); graphButton.checkedlayout()">
+			<div id="reverseYAxisButton" class="sidebarButton hidden" onclick="checkbox.bind(this)(); (graphButton.checked ? graph : layout)()">
 				<p>Reverse Y axis</p><input type="checkbox" />
 			</div>
 			
-			<div id="graphButton" class="sidebarButton" onclick="checkbox.bind(this)(); (this.checked ? graph : layout)()"><!-- graph(layoutType, highlightType) -->
-				<p>Graph H vs L</p><input type="checkbox" />
+			<div id="graphButton" class="sidebarButton" onclick="checkbox.bind(this)(); graphingChange.bind(this)()">
+				<p>Graph <span style="font-size: 0.7em;">(Highlight vs Layout)</span></p><input type="checkbox" />
 			</div>
 
 			<div id="layoutSelect" class="dropdown" onmouseenter="showContent.bind(this)()" onmouseleave="hideContent.bind(this)()">
@@ -59,7 +59,24 @@
 
 		</div>
 
-		<div id="elements">
+		<div id="elementsDiv">
+			<div id="axies">
+				<svg style="width: 100%; height: 100%; bottom: 0; position: absolute;">
+					<line id="xAxisLine1" x1="2.5%" y1="calc(11.5 * 100% / 12)" x2="50%" y2="calc(11.5 * 100% / 12)" stroke="black" />
+					<line id="xAxisLine2" x1="50%" y1="calc(11.5 * 100% / 12)" x2="97%" y2="calc(11.5 * 100% / 12)" stroke="black" />
+					<line x1="97%" 	y1="calc(11.5 * 100% / 12)" x2="calc(97% - 5px)" 	y2="calc(11.5 * 100% / 12 - 3px)"	stroke="black" />
+					<line x1="97%" 	y1="calc(11.5 * 100% / 12)" x2="calc(97% - 5px)" 	y2="calc(11.5 * 100% / 12 + 3px)"	stroke="black" />
+				
+					<line id="yAxisLine1" x1="2.5%" y1="calc(0.6 * 100% / 12)" x2="2.5%" y2="50%" stroke="black" />
+					<line id="yAxisLine2" x1="2.5%" y1="50%" x2="2.5%" y2="calc(11.5 * 100% / 12)" stroke="black" />
+					<line x1="2.5%" y1="calc(0.6 * 100% / 12)" 	x2="calc(2.5% + 3px)" y2="calc(0.6 * 100% / 12 + 5px)" 	stroke="black" />
+					<line x1="2.5%" y1="calc(0.6 * 100% / 12)" 	x2="calc(2.5% - 3px)" y2="calc(0.6 * 100% / 12 + 5px)" 	stroke="black" />
+				</svg>
+			
+				<span id="xAxis" style="text-align: center; position: absolute; top: calc(95% - 0.5em); width: 100%;">Atomic Number</span>
+				<span id="yAxis" style="text-align: center; position: absolute; top: calc(50% - 0.5em); transform: rotate(270deg);">Atomic Number</span>
+			</div>
+			
 			<div id="textWidth" style="font-size: 0.4em; position: absolute; height: auto; width: auto; white-space: nowrap; visibility: hidden;"></div>
       <svg id="loading" width="15%" viewBox="0 0 100 100">
         <circle cx="50%" cy="20%" r="10" transform="rotate(0 50 50)" style="opacity: 1;"/>

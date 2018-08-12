@@ -110,7 +110,16 @@ var player = {
       }
       ctx.fillRect(i, cnv.height/2 - (cnv.height * 0.5/d)/2, 1, cnv.height * 0.5/d)
       //minictx.fillRect(Math.round(ray.x*2), Math.round(ray.y*2), 1, 1)
-      mapctx.fillRect(Math.floor(player.pos.x + Math.cos(a)*ray.d)*5, Math.floor(player.pos.y + Math.sin(a)*ray.d)*5, 3, 3)
+      var x = (player.pos.x + Math.cos(a)*ray.d + (
+        Math.abs(Math.round(((player.pos.x + Math.cos(a)*ray.d) % 1)*1000000000)/1000000000)%1 == 0 && Math.cos(a) < 0 ? -1 : 0
+      ))*5
+      var y = (player.pos.y + Math.sin(a)*ray.d + (
+        Math.abs(Math.round(((player.pos.y + Math.sin(a)*ray.d) % 1)*1000000000)/1000000000)%1 == 0 && Math.sin(a) < 0 ? -1 : 0
+      ))*5
+      if (i == cnv.width/2) {
+        console.log()
+      }
+      mapctx.fillRect(x, y, 5, 5)
     }
   }
 }
