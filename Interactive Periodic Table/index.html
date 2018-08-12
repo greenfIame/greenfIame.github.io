@@ -28,10 +28,10 @@
 				<p>Re-scrape data</p>
 			</div>
 
-			<div id="reverseButton" class="sidebarButton" onclick="checkbox.bind(this)(); (graphButton.checked ? graph : layout)()">
+			<div id="reverseButton" class="sidebarButton" onclick="checkbox.bind(this)(); (graphButton.checked && layoutType != 'periodic' && highlightType != 'none' ? graph : layout)()">
 				<p>Reverse order</p><input type="checkbox" />
 			</div>
-			<div id="reverseYAxisButton" class="sidebarButton hidden" onclick="checkbox.bind(this)(); (graphButton.checked ? graph : layout)()">
+			<div id="reverseYAxisButton" class="sidebarButton hidden" onclick="checkbox.bind(this)(); (graphButton.checked && layoutType != 'periodic' && highlightType != 'none' ? graph : layout)()">
 				<p>Reverse Y axis</p><input type="checkbox" />
 			</div>
 			

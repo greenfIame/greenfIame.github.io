@@ -227,8 +227,8 @@ function createButtons() {
 		var text = keys[i].capsAll()
 
 		//Creating the buttons
-		layoutSelectContent.innerHTML += `<div class='selectOption' id='layout_${keys[i]}' onclick="layoutChange.bind(this)(); (graphButton.checked ? graph : layout)()">${text}</div>`
-		highlightSelectContent.innerHTML += `<div class='selectOption' id='highlight_${keys[i]}' onclick="highlightChange.bind(this)(); highlight(); (graphButton.checked ? graph() : 0)">${text}</div>`
+		layoutSelectContent.innerHTML += `<div class='selectOption' id='layout_${keys[i]}' onclick="layoutChange.bind(this)();">${text}</div>`
+		highlightSelectContent.innerHTML += `<div class='selectOption' id='highlight_${keys[i]}' onclick="highlightChange.bind(this)();">${text}</div>`
 
 	}
 
@@ -517,17 +517,30 @@ function layoutChange() {
 	document.getElementById("layout_" + layoutType).className = "selectOption"
 	this.className = "selectOption active"
 	layoutType = this.id.slice(7)
+	
+	if (layoutType == "periodic") {
+		reverseButton.className = "sidebarButton inactive"
+	} else {
+		reverseButton.className = "sidebarButton"
+	}
+	
 	if (layoutType == "periodic" || highlightType == "none") {
-		reverseButton.className = graphButton.className = "sidebarButton inactive"
+		graphButton.className = "sidebarButton inactive"
 		reverseButton.querySelector("p").innerHTML = "Reverse order"
 		reverseYAxisButton.className = 'sidebarButton hidden'
 		axies.style.opacity = "0"
 	} else {
-		reverseButton.className = graphButton.className = "sidebarButton"
+		graphButton.className = "sidebarButton"
 		if (graphButton.checked) {
 			reverseButton.querySelector("p").innerHTML = "Reverse X axis" 
 			reverseYAxisButton.className = 'sidebarButton'
 		}
+	}
+	
+	if (graphButton.checked && layoutType != "periodic" && highlightType != "none") {
+		graph()
+	} else {
+		layout()
 	}
 }
 
@@ -536,8 +549,8 @@ function highlightChange() {
 	document.getElementById("highlight_" + highlightType).className = "selectOption"
 	this.className = "selectOption active"
 	highlightType = this.id.slice(10)
-	if (layoutType == "periodic") {
-		reverseButton.className = graphButton.className = "sidebarButton inactive"
+	if (layoutType == "periodic" || highlightType == "none") {
+		graphButton.className = "sidebarButton inactive"
 		reverseButton.querySelector("p").innerHTML = "Reverse order"
 		reverseYAxisButton.className = 'sidebarButton hidden'
 		axies.style.opacity = "0"
@@ -550,6 +563,11 @@ function highlightChange() {
 			reverseButton.querySelector("p").innerHTML = "Reverse X axis" 
 			reverseYAxisButton.className = 'sidebarButton'
 		}
+	}
+	
+	highlight()
+	if (graphButton.checked && layoutType != "periodic" && highlightType != "none") {
+		graph()
 	}
 }
 
