@@ -1,4 +1,7 @@
-//Global variable
+//Global variables
+var version = 1
+
+
 var layoutType = "periodic"
 var highlightType = "none"
 var sideBar = false
@@ -10,8 +13,9 @@ var elementsLength
 var elementsByAtomicNumber
 
 //Checks for pre-exiting local storage items and either loads them or creates space (persistent storage)
-if (!window.localStorage.IPT) {
+if (!window.localStorage.IPT || !window.localStorage.IPTversion || window.localStorage.IPTversion != version) {
 	window.localStorage.IPT = JSON.stringify(elements)
+	window.localStorage.IPTversion = version
 } else {
 	elements = JSON.parse(window.localStorage.IPT)
 }
@@ -103,8 +107,8 @@ function XPath(xpath, parent) {
 
 //Generates User Defined objects from wikipedia page html using xpath and regex
 function addElement(that){
-	var parser = new DOMParser();
-	var doc = parser.parseFromString(JSON.parse(that.response).parse.text["*"], "text/html");
+	var parser = new DOMParser()
+	var doc = parser.parseFromString(JSON.parse(that.response).parse.text["*"], "text/html")
 	var element = {
 		name: /[A-Za-z]+\w/.exec(JSON.parse(that.response).parse.title)[0],
 		appearance: (XPath("//tr[contains(., 'Appearance')]/td", doc).innerText||"").replace(/[\[\]0-9]/g, "").trim(),
@@ -573,11 +577,12 @@ function highlightChange() {
 
 //Handle a keypress and highlight search results
 function keyPress(event) {
-	hideElementData()
-
+	
 	if (event.metaKey || event.ctrlKey) {
 		return 0
 	}
+	
+	hideElementData()
 
 	clearTimeout(searchTimeout.fade)
 	clearTimeout(searchTimeout.clear)
@@ -634,6 +639,8 @@ function checkbox() {
 
 //Hides element data
 function hideElementData() {
+	window.getSelection().removeAllRanges()
+	document.getElementById("elementData").style.pointerEvents = "none"
 	document.getElementById("dataForm").style.opacity = "0"
 }
 
@@ -663,6 +670,7 @@ function binarySearch(list, attribute, target) {
 
 //Shows relevant element data
 function showElementData() {
+	document.getElementById("elementData").style.pointerEvents = "auto"
 	var index = binarySearch(elementsByAtomicNumber, function(a){return a.atomic_number}, this.querySelector(".AtomicNumber").innerHTML)
 
 	var element = elementsByAtomicNumber[index]

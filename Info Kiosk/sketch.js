@@ -1,5 +1,5 @@
 function start() {
-	
+
 }
 
 function f() {
@@ -8,7 +8,7 @@ function f() {
 		document.exitFullscreen = document.exitFullscreen || document.mozExitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen
 		document.exitFullscreen && document.exitFullscreen()
 	} else {
-		var docElm = document.getElementById("screen")
+		var docElm = document.body
 		docElm.requestFullscreen = docElm.requestFullscreen || docElm.mozRequestFullScreen || docElm.webkitRequestFullScreen || docElm.msRequestFullscreen
 		docElm.requestFullscreen && docElm.requestFullscreen()
 	}
