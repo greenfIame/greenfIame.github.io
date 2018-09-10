@@ -1,6 +1,8 @@
 var cnv, ctx, mapctx, minictx, updater, paused, map, keys = {}
 var sensitivity = 1
 
+var openingDoors = []
+
 function start() {
 	cnv = maincanvas
 	ctx = cnv.getContext("2d")
@@ -21,7 +23,25 @@ function start() {
 	}
 
 	createMap()
-	render2d()
+	
+	mapctx.clearRect(0, 0, mapcanvas.width, mapcanvas.height)
+
+	var m = 5
+
+	mapctx.fillStyle = "#fff"
+	mapctx.beginPath()
+	for (var i = 0; i < map.length; i++) {
+		for (var j = 0; j < map[i].length; j++) {
+			if (map[i][j].u) {
+				mapctx.rect(i * m, j * m, m + 1, 1)
+			}
+			if (map[i][j].l) {
+				mapctx.rect(i * m, j * m, 1, m + 1)
+			}
+		}
+	}
+	mapctx.fill()
+	
 	update()
 	render()
 }
@@ -82,6 +102,14 @@ function mouseup() {
 }
 
 function update() {
+	for (var i = 0; i < openingDoors.length; i++) {
+		openingDoors[i].state -= 0.01
+		if (openingDoors[i].state <= 0) {
+			openingDoors[i].state = 0
+			openingDoors.splice(i, 1)
+			i--
+		}
+	}
 	player.update()
 	if (!paused) {
 		setTimeout(update, 1000/60)
@@ -99,7 +127,6 @@ function updateMinimap() {
 
 function render() {
 	render3d()
-	//render2d()
 	//updateMinimap()
 	if (!paused) {
 		requestAnimationFrame(render)
@@ -110,33 +137,6 @@ function render3d() {
 	ctx.fillStyle = "#aaa"
 	ctx.fillRect(0, 0, cnv.width, cnv.height)
 	player.render3d()
-}
-
-function render2d() {
-	mapctx.clearRect(0, 0, mapcanvas.width, mapcanvas.height)
-
-	var m = 5
-
-	mapctx.fillStyle = "#fff"
-	mapctx.beginPath()
-	for (var i = 0; i < map.length; i++) {
-		for (var j = 0; j < map[i].length; j++) {
-			if (map[i][j].u) {
-				mapctx.rect(i * m, j * m, m + 1, 1)
-			}
-			if (map[i][j].l) {
-				mapctx.rect(i * m, j * m, 1, m + 1)
-			}
-		}
-	}
-	mapctx.fill()
-
-	mapctx.fillStyle = "#f00"
-	//mapctx.fillRect(player.pos.x * m - 1, player.pos.y * m - 1, 3, 3)
-	mapctx.strokeStyle = "#000"
-
-	//var r = castRay(player.heading, player.pos.x, player.pos.y, false, m)
-
 }
 
 function createMap() {
@@ -165,13 +165,15 @@ function createMap() {
 			portals[keys[i].toUpperCase()] = portals[keys[i].toUpperCase()] ? portals[keys[i].toUpperCase()] : {}
 			var r = portals[keys[i].toLowerCase()].rotate
 			portals[keys[i].toUpperCase()].rotate = !r ? false : (r == "reverse" ? "reverse" : (r == "left" ? "right" : "left"))
-			var s = portals[keys[i].toLowerCase()][i % 2 == 1 ? "down" : "right"]
-			portals[keys[i].toUpperCase()][portals[keys[i].toLowerCase()].right ? "right" : "down"] = null
+			if (!portals[keys[i].toUpperCase()].direction === undefined) {
+				portals[keys[i].toUpperCase()].direction = null
+			}
 			portals[keys[i].toUpperCase()].x = temp[keys[i].toLowerCase()].x
 			portals[keys[i].toUpperCase()].y = temp[keys[i].toLowerCase()].y
 		}
 	}
 	map = Array.apply(null, Array(mapData[0].length/2)).map(i => [])
+	
 
 	for (var i = 0; i < mapData[0].length; i += 2) {
 		for (var j = 0; j < mapData.length; j++) {
@@ -195,4 +197,6 @@ function createMap() {
 	mapcanvas.height = map[0].length * 5
 	minimap.width = map.length * 2
 	minimap.height = map[0].length * 2
+	
+	//openingDoors.push(map[33][50].l)
 }

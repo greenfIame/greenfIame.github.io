@@ -25,12 +25,12 @@ var player = {
     if (
       Math.floor(this.pos.x + v.x) == Math.floor(this.pos.x) ||
       !map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l ||
-      map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l.state <= 0
+      map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l.state <= 0.2
     ) {
       this.pos.x += v.x
     } else {
       var wall = map[Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)][Math.floor(this.pos.y)].l
-      if (typeof(wall) == "object" && (wall.right === null || wall.right === (v.y > 0))) {
+      if (typeof(wall) == "object" && (wall.direction === null || wall.direction === (v.x > 0))) {
         var relativePos = {x: (Math.floor(this.pos.x) + (v.x > 0 ? 1 : 0)) - (this.pos.x + v.x), y: this.pos.y - Math.floor(this.pos.y)}
         switch(wall.rotate) {
           case "left":
@@ -52,19 +52,19 @@ var player = {
             this.pos.x = wall.x - relativePos.x
             this.pos.y = wall.y + relativePos.y
         }
-      } else if (wall.state) {
-        wall.state -= 0.01
+      } else if (wall.state && openingDoors.indexOf(wall) == -1) {
+				openingDoors.push(wall)
       }
     }
     if (
       Math.floor(this.pos.y + v.y) == Math.floor(this.pos.y) ||
       !map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u ||
-      map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u.state <= 0
+      map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u.state <= 0.2
     ) {
       this.pos.y += v.y
     } else {
       var wall = map[Math.floor(this.pos.x)][Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)].u
-      if (typeof(wall) == "object" && (wall.down === null || wall.down === (v.y > 0))) {
+      if (typeof(wall) == "object" && (wall.direction === null || wall.direction === (v.y > 0))) {
         var relativePos = {x: this.pos.x - Math.floor(this.pos.x), y: (Math.floor(this.pos.y) + (v.y > 0 ? 1 : 0)) - (this.pos.y + v.y)}
         switch(wall.rotate) {
           case "left":
@@ -86,8 +86,8 @@ var player = {
             this.pos.x = wall.x + relativePos.x
             this.pos.y = wall.y - relativePos.y
         }
-      } else if (wall.state) {
-        wall.state -= 0.01
+      } else if (wall.state && openingDoors.indexOf(wall) == -1) {
+        openingDoors.push(wall)
       }
     }
   },
@@ -109,17 +109,10 @@ var player = {
         mapctx.fillStyle = `#00f`
       }
       ctx.fillRect(i, cnv.height/2 - (cnv.height * 0.5/d)/2, 1, cnv.height * 0.5/d)
-      //minictx.fillRect(Math.round(ray.x*2), Math.round(ray.y*2), 1, 1)
-      var x = (player.pos.x + Math.cos(a)*ray.d + (
-        Math.abs(Math.round(((player.pos.x + Math.cos(a)*ray.d) % 1)*1000000000)/1000000000)%1 == 0 && Math.cos(a) < 0 ? -1 : 0
-      ))*5
-      var y = (player.pos.y + Math.sin(a)*ray.d + (
-        Math.abs(Math.round(((player.pos.y + Math.sin(a)*ray.d) % 1)*1000000000)/1000000000)%1 == 0 && Math.sin(a) < 0 ? -1 : 0
-      ))*5
-      if (i == cnv.width/2) {
-        console.log()
-      }
-      mapctx.fillRect(x, y, 5, 5)
+      var x = (player.pos.x + Math.cos(a)*ray.d)*5
+      var y = (player.pos.y + Math.sin(a)*ray.d)*5
+      //mapctx.fillRect(x, y, 1, 1)
+			mapctx.fillRect(ray.x*5, ray.y*5, 1, 1)
     }
   }
 }
@@ -136,6 +129,132 @@ function castRay(a, x_, y_, ignore, render_) {
   y = mx + b
   y/m - b = x
   */
+  var m = Math.tan(a)
+  var b = -m*x_ + y_
+
+  var right = (a > Math.PI * 3/2 || a < Math.PI / 2)
+  var down = (a > 0 && a < Math.PI)
+
+
+  var x = Math[right ? "ceil" : "floor"](x_)
+  var y = Math[down ? "ceil" : "floor"](y_)
+  var genX = (y - b)/m, genY = m*x + b
+  var dist = ignore ? ignore : 0
+  var p = {x: x_, y: y_}
+
+  mapctx.fillStyle = "#0f0"
+
+  for (var i = 0; i < 100 && x >= 0 && x < map.length && y >= 0 && y < map[0].length && dist < 60; i++) {
+    genY = m*x + b
+    genX = (y - b)/m
+    if (Math.abs(p.x - x) < Math.abs(p.x - genX)) {
+
+      dist += Math.sqrt(Math.pow(p.x - x, 2) + Math.pow(p.y - genY, 2))
+      p = {x: x, y: genY}
+
+      if (c(x, genY, l)) {
+        if (!ignore) {
+          var t = checkType(x, genY, right, l, genY - Math.floor(genY))
+					if (t == "door") {
+						return {x: x, y: genY, d: dist, t: "door"}
+					} else if (typeof(t) == "object") {
+						return castRay(a + t.a, t.x, t.y, dist)
+					} else if (t == "wall") {
+						return {x: x, y: genY, d: dist, t: "wall"} 
+					}
+        } else {
+          ignore = false
+        }
+      }
+
+      x += right ? 1 : -1
+    } else {
+
+      dist += Math.sqrt(Math.pow(p.x - genX, 2) + Math.pow(p.y - y, 2))
+      p = {x: genX, y: y}
+
+      if (c(genX, y, u)) {
+        if (!ignore) {
+          var t = checkType(genX, y, down, u, genX - Math.floor(genX))
+					if (t == "door") {
+						return {x: genX, y: y, d: dist, t: "door"}
+					} else if (typeof(t) == "object") {
+						return castRay(a + t.a, t.x, t.y, dist)
+					} else if (t == "wall") {
+						return {x: genX, y: y, d: dist, t: "wall"} 
+					}
+        } else {
+          ignore = false
+        }
+      }
+
+      y += down ? 1 : -1
+    }
+  }
+  return {x: Infinity, y: Infinity}
+}
+
+var u = "u"
+var l = "l"
+
+function checkType(x, y, direction, side, relative) {
+  var wall = map[Math.floor(x)][Math.floor(y)][side]
+
+  if (typeof(wall) == "object" && wall.state !== undefined) {
+		if (Math.abs(relative - 0.5) > (1 - wall.state)/2) {
+			return "door"
+		}
+  } else if (typeof(wall) == "object" && (wall.direction === null || wall.direction === direction) && !wall.state) {
+    var rayParameters = {x: wall.x, y: wall.y, a: 0}
+		var relativeSide = side == "u" ? "x" : "y"
+		
+		switch (wall.rotate) {
+			case "reverse":
+				rayParameters[relativeSide] += 1 - relative
+				rayParameters.a += Math.PI
+				break
+			case "right":
+				relativeSide = relativeSide == "x" ? "y" : "x"
+				if (relativeSide == "x") {
+					relative = 1 - relative
+				}
+				rayParameters[relativeSide]
+				rayParameters.a += Math.PI/2
+				break
+			case "left":
+				relativeSide = relativeSide == "x" ? "y" : "x"
+				if (relativeSide == "y") {
+					relative = 1 - relative
+				}
+				rayParameters[relativeSide]
+				rayParameters.a -= Math.PI/2
+				break
+			default:
+				rayParameters[relativeSide] += relative
+		}
+
+    return rayParameters
+  } else {
+    return "wall"
+  }
+	return false
+}
+
+function c(x, y, s) {
+  x = Math.floor(x)
+  y = Math.floor(y)
+  return map[x] && map[x][y] && map[x][y][s]
+}
+
+/*
+function castRay(a, x_, y_, ignore, render_) {
+  a %= Math.PI*2;
+	if (a < 0) {a += Math.PI*2}
+
+  /*
+  y = mx + b
+  y/m - b = x
+  * /
   var m = Math.tan(a)
   var b = -m*x_ + y_
 
@@ -250,12 +369,4 @@ function castRay(a, x_, y_, ignore, render_) {
   }
   return {x: Infinity, y: Infinity}
 }
-
-var u = "u"
-var l = "l"
-
-function c(x, y, s) {
-  x = Math.floor(x)
-  y = Math.floor(y)
-  return map[x] && map[x][y] && map[x][y][s]
-}
+*/

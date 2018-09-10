@@ -1,3 +1,9 @@
+//The online element of the project has been removed as it was a rather pointless experiment in asyncronous javascript and detracts from the user experience.
+//The code is still there however it is commented out, to reactive simply uncomment:
+//line 16
+//lines 19-25
+//lines 28-30 (html)
+
 //Global variables
 var version = 1
 
@@ -7,18 +13,18 @@ var highlightType = "none"
 var sideBar = false
 var searchTimeout = {clear: null, fade: null}
 
-var elements = []
+//var elements = []
 var elementsLength
 
 var elementsByAtomicNumber
 
 //Checks for pre-exiting local storage items and either loads them or creates space (persistent storage)
-if (!window.localStorage.IPT || !window.localStorage.IPTversion || window.localStorage.IPTversion != version) {
-	window.localStorage.IPT = JSON.stringify(elements)
-	window.localStorage.IPTversion = version
-} else {
-	elements = JSON.parse(window.localStorage.IPT)
-}
+// if (!window.localStorage.IPT || !window.localStorage.IPTversion || window.localStorage.IPTversion != version) {
+// 	window.localStorage.IPT = JSON.stringify(elements)
+// 	window.localStorage.IPTversion = version
+// } else {
+// 	elements = JSON.parse(window.localStorage.IPT)
+// }
 
 //Function called once the body of the page loads
 function start() {
