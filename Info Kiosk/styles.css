@@ -173,6 +173,14 @@ svg {
 	visibility: hidden;
 }
 
+#route {
+	animation: path 0.5s infinite linear;
+}
+
+@keyframes path {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -0.6; }
+}
 
 /*
 ♔♕♖♗♘♙♚♛♜♝♞♟
