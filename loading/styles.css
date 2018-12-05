@@ -1,0 +1,48 @@
+body {
+	background-color: #222;
+}
+
+#loading {
+	width: 1em;
+	height: 1em;
+	background: linear-gradient(0deg, #333, #111);
+	border-radius: 100%;
+	position: absolute;
+}
+
+#loading:after {
+	position: absolute;
+	top: 100%;
+	content: "";
+	color: white;
+	text-align: center;
+	animation: loading 3s infinite;
+	width: 100%;
+	font-size: 0.2em;
+}
+
+#loading > div {
+	position: relative;
+	border-radius: 100%;
+	overflow: hidden;
+	height: 1em;
+	width: 1em;
+}
+
+#loading > div > img {
+	position: absolute;
+	height: 1em;
+	left: 50%;
+	transform: translateX(-50%)
+}
+
+.a {
+	z-index: 2;
+}
+
+@keyframes loading {
+	0% {content: "loading...";}
+	33% {content: "loading.";}
+	66% {content: "loading..";}
+	100% {content: "loading...";}
+}
