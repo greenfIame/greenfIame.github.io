@@ -1,0 +1,141 @@
+body {
+	font-family: 'Titillium Web', sans-serif;
+	font-size: 0;
+	user-select: none;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+#output {
+	font-size: 20px;
+}
+
+#wrapper {
+	display: flex;
+	background: radial-gradient(#999, #777);
+	padding: 1px;
+}
+
+#targets {
+	display: inline-block;
+	vertical-align: top;
+	flex: 1;
+}
+.target {
+	background: radial-gradient(#999, #777);
+	float: left;
+	width: 110px;
+	border: 1px solid #aaa;
+	border-right: 1px solid #555;
+	border-bottom: 1px solid #555;
+	margin: 1px;
+}
+.target img {
+	padding: 2px;
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+}
+.target * {
+	vertical-align: top;
+	color: black;
+	font-size: 15px;
+	line-height: 36px;
+	display: inline-block;
+	margin: 0;
+}
+.target input {
+	background: none;
+	border: none;
+	padding: 0;
+	text-align: right;
+	width: 40px;
+}
+.target *:nth-child(3) {
+	pointer-events: none;
+	width: 30px;
+}
+input:focus {
+	outline: 0;
+}
+
+#itemMenu {
+	display: inline-block;
+	width: 400px;
+	min-width: 400px;
+}
+
+#itemMenu div div {
+	float: left;
+	display: block;
+	cursor: pointer;
+	position: relative;
+	padding: 2px;
+	background: radial-gradient(#999, #777);
+	border: 1px solid #aaa;
+	border-right: 1px solid #555;
+	border-bottom: 1px solid #555;
+	margin: 1px;
+}
+
+#itemMenu div div img {
+	width: 32px;
+	height: 32px;
+}
+
+#itemMenu div div:hover {
+	background: radial-gradient(#fA3, #B72);
+}
+
+#itemMenu div div:active {
+	background: radial-gradient(#e92, #a61);
+}
+
+#itemMenu div div:hover:after {
+  position: absolute;
+  content: attr(data);
+  left: 2px;
+  top: 85%;
+  padding: 5px;
+	font-size: 15px;
+  background-color: rgba(67,67,72,0.8);
+	pointer-events: none;
+	z-index: 1;
+	color: white;
+}
+
+#itemMenu > div:not(:first-child) {
+	display: none;
+	pointer-events: none;
+}
+
+#itemMenu > div:first-child {
+	display: block;
+}
+
+#itemMenu > div:first-child div {
+	padding: 5px;
+	border: 2px solid #aaa;
+	border-right: 2px solid #555;
+	border-bottom: 2px solid #555;
+	margin: 1px;
+}
+
+#itemMenu > div:first-child div:hover {
+	background-color: red;
+}
+
+#itemMenu > div:first-child div img {
+	width: 64px;
+	height: 64px;
+}
+
+#itemMenu .active:not(:first-child) {
+	display: inline-block;
+	pointer-events: all;
+}
+
+#itemMenu div:first-child .active {
+	background: radial-gradient(#fA3, #B72);
+}
